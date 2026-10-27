@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b15">
+  <meta name="description" content="Risk Star Wars — protótipo jogável de estratégia galáctica.">
+  <title>Risk Star Wars — Conquista Galáctica</title>
+  <style>
+    :root{color-scheme:dark;--bg:#080b15;--panel:#101625;--panel2:#141d2f;--line:#28344b;--text:#e9f0fb;--muted:#8d9bb3;--gold:#f3c969;--accent:#65d9e8;--jedi:#65d9e8;--sith:#ff6b7c;--bounty:#efb85c;--player-color:#65d9e8}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(ellipse at 50% -20%,#192642 0%,#0b1020 44%,var(--bg) 76%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);min-height:100vh}
+    button{font:inherit}
+    .topbar{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;border-bottom:1px solid #27314a;background:#090d18dd;position:sticky;top:0;z-index:10;backdrop-filter:blur(16px)}
+    .brand{display:flex;gap:13px;align-items:center}.brand-mark{width:40px;height:40px;display:grid;place-items:center;border:1px solid #d9b85e;border-radius:12px;color:#f3d584;font-size:22px;background:linear-gradient(145deg,#2b2a24,#111827);box-shadow:0 0 24px #d9b85e1b}
+    .brand-name{font-size:16px;font-weight:900;letter-spacing:.16em}.brand-sub{font-size:10px;color:var(--muted);letter-spacing:.19em;margin-top:4px}
+    .top-meta{display:flex;align-items:center;gap:18px}.phase{font-size:10px;letter-spacing:.15em;color:#c1cadd;border:1px solid #35415b;padding:8px 11px;border-radius:20px}.turn-chip{display:flex;align-items:center;gap:8px;color:var(--player-color);font-size:12px;font-weight:800;letter-spacing:.1em}.turn-dot{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 12px currentColor}
+    .layout{max-width:1600px;margin:auto;padding:20px;display:grid;grid-template-columns:238px minmax(430px,1fr) 285px;gap:16px;align-items:start}
+    .panel{background:linear-gradient(160deg,#121a2bfa,#0d1321fa);border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 18px 45px #0002}
+    .panel-head{padding:16px 16px 12px;border-bottom:1px solid #263148;display:flex;align-items:center;justify-content:space-between}
+    .eyebrow{color:#8392ad;font-size:9px;letter-spacing:.2em;font-weight:800;text-transform:uppercase}
+    .panel-title{margin:5px 0 0;font-size:15px;font-weight:800;letter-spacing:.02em}
+    .left-panel{display:flex;flex-direction:column;gap:14px}
+    .campaign-card{padding:16px;background:linear-gradient(140deg,#1b2944,#121a2b);border:1px solid #33415e;border-radius:15px;position:relative;overflow:hidden}
+    .campaign-card:after{content:"✦";font-size:100px;position:absolute;right:-8px;top:25px;color:#ffffff08;pointer-events:none}
+    .campaign-name{font-size:18px;line-height:1.25;font-weight:850;margin:10px 0 6px}
+    .campaign-copy{font-size:11px;color:#aab8ce;line-height:1.6;margin:0}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .stat{padding:12px;background:#101827;border:1px solid #253149;border-radius:11px}
+    .stat-label{font-size:9px;letter-spacing:.1em;color:#8492a9;text-transform:uppercase}
+    .stat-value{font-size:22px;font-weight:800;margin-top:5px;font-variant-numeric:tabular-nums}
+    .stat-note{color:#75849c;font-size:10px;margin-top:2px}
+    .section-label{font-size:10px;letter-spacing:.16em;color:#94a2b8;font-weight:800;text-transform:uppercase;margin:0 0 9px}
+    .faction-list{display:grid;gap:7px}
+    .faction-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #253149;background:#0e1524;border-radius:10px}
+    .faction-sigil{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px;font-weight:900;flex:0 0 auto}
+    .faction-row .name{font-size:11px;font-weight:800}.faction-row .desc{font-size:9px;color:var(--muted);margin-top:3px}.faction-row .count{margin-left:auto;font-size:12px;font-weight:850;font-variant-numeric:tabular-nums}
+    .key{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:10px;color:#9ba9bf}
+    .key span{display:flex;align-items:center;gap:6px}.key i{width:7px;height:7px;border-radius:50%;display:inline-block}
+    .log-panel{padding:14px 15px}
+    .log-list{display:grid;gap:11px;margin-top:13px}
+    .log-item{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:10px;line-height:1.45;color:#afbbcd}
+    .log-icon{width:22px;height:22px;border-radius:7px;background:#1a263b;display:grid;place-items:center;font-size:11px}
+    .log-item strong{color:#e4eafa;font-weight:750}
+    .map-panel{min-width:0}
+    .map-head{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:16px 18px;border-bottom:1px solid #263148}
+    .map-heading{font-size:16px;font-weight:850}.map-sub{color:#8a9ab2;font-size:10px;margin-top:5px}
+    .map-actions{display:flex;gap:7px;align-items:center}.small-btn{border:1px solid #33425c;background:#152035;color:#cbd6e8;padding:8px 10px;border-radius:8px;font-size:10px;cursor:pointer}.small-btn:hover{border-color:#6b7b99}
+    .map-wrap{padding:12px;position:relative}
+    .galaxy-map{position:relative;aspect-ratio:1000/620;width:100%;overflow:hidden;border-radius:12px;border:1px solid #25344e;background-color:#0a1120;background-image:radial-gradient(ellipse at 52% 48%,#20304b75 0%,#101b32a6 37%,#0b1322 74%),radial-gradient(1px 1px at 8% 14%,#c6e9ffb5 1px,transparent 1.6px),radial-gradient(1px 1px at 29% 81%,#d4e6ffb0 1px,transparent 1.5px),radial-gradient(1px 1px at 72% 12%,#d4e6ffb0 1px,transparent 1.5px),radial-gradient(1px 1px at 88% 73%,#d4e6ffb0 1px,transparent 1.5px),radial-gradient(1px 1px at 59% 87%,#d4e6ffb0 1px,transparent 1.5px),radial-gradient(1px 1px at 19% 44%,#d4e6ffb0 1px,transparent 1.5px),radial-gradient(1px 1px at 94% 30%,#d4e6ffb0 1px,transparent 1.5px);background-size:auto,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%}
+    .map-vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#080d1a45,transparent 25%,transparent 75%,#080d1a45),linear-gradient(0deg,#080d1a66,transparent 24%,transparent 78%,#080d1a44)}
+    .map-grid{position:absolute;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(#51627a21 1px,transparent 1px),linear-gradient(90deg,#51627a21 1px,transparent 1px);background-size:7% 10%}
+    .nebula{position:absolute;width:37%;height:30%;left:30%;top:32%;background:#5e71bd19;filter:blur(35px);border-radius:50%;pointer-events:none}
+    .planet-links{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+    .link-line{stroke:#62718d65;stroke-width:1.6;stroke-dasharray:5 6;vector-effect:non-scaling-stroke}
+    .link-line.active{stroke:var(--player-color);stroke-width:2.8;stroke-dasharray:none;filter:drop-shadow(0 0 3px var(--player-color))}
+    .planet-node{position:absolute;transform:translate(-50%,-50%);width:112px;min-height:53px;padding:7px 8px 6px;border:1px solid var(--owner-color,#65728c);border-radius:10px;background:#0c1423ed;color:#eaf1fd;cursor:pointer;text-align:left;box-shadow:0 7px 18px #0006;transition:transform .16s,border-color .16s,box-shadow .16s;z-index:2}
+    .planet-node:hover{z-index:5;transform:translate(-50%,-50%) scale(1.06);box-shadow:0 0 0 2px #ffffff15,0 0 20px color-mix(in srgb,var(--owner-color) 22%,transparent)}
+    .planet-node.selected{border:2px solid var(--owner-color);box-shadow:0 0 0 3px #ffffff12,0 0 22px color-mix(in srgb,var(--owner-color) 30%,transparent);z-index:4}
+    .planet-node.target{outline:2px solid #f4d37b;outline-offset:3px;z-index:4}
+    .planet-node.neutral{border-color:#68758a}
+    .planet-top{display:flex;align-items:center;gap:5px;justify-content:space-between}
+    .planet-name{font-size:10px;font-weight:850;white-space:nowrap;letter-spacing:.01em}
+    .planet-tier{font-size:7px;letter-spacing:.08em;color:#93a5bf}
+    .planet-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:7px;color:#96a5ba;font-size:8px;gap:4px}
+    .owner-tag{font-size:7px;font-weight:900;letter-spacing:.1em;color:var(--owner-color);white-space:nowrap}
+    .troops{border-radius:5px;padding:3px 5px;background:#1d2a40;color:#f3f6fe;font-weight:900;font-size:9px;font-variant-numeric:tabular-nums}
+    .map-caption{display:flex;justify-content:space-between;gap:12px;padding:12px 4px 2px;color:#71819a;font-size:9px;line-height:1.5}
+    .map-caption strong{color:#aebbd0}
+    .right-panel{display:flex;flex-direction:column;gap:13px}
+    .turn-card{padding:15px;background:linear-gradient(135deg,color-mix(in srgb,var(--player-color) 12%,#111a2c),#101625);border:1px solid color-mix(in srgb,var(--player-color) 38%,#26344b);border-radius:14px}
+    .turn-card-top{display:flex;align-items:center;justify-content:space-between}.turn-label{font-size:9px;letter-spacing:.17em;color:#9aaac1;font-weight:800}.turn-round{font-size:10px;color:#c3cddd}
+    .turn-faction{font-size:19px;font-weight:900;margin-top:11px;letter-spacing:.02em}.turn-description{font-size:10px;color:#9baac1;margin-top:5px;line-height:1.5}
+    .resource-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+    .resource{padding:9px 10px;background:#090f1c7a;border:1px solid #34415a;border-radius:9px}.resource-label{font-size:9px;color:#91a1b8}.resource-value{font-size:19px;font-weight:900;margin-top:4px}
+    .intel{padding:16px}
+    .intel-title{display:flex;align-items:start;justify-content:space-between;gap:10px}.intel-name{font-size:20px;font-weight:900;letter-spacing:-.02em}.intel-mark{color:var(--gold);font-size:17px}
+    .intel-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.pill{font-size:8px;letter-spacing:.09em;border:1px solid #34425b;border-radius:20px;padding:5px 7px;color:#9dacbf;font-weight:800}
+    .intel-desc{font-size:11px;line-height:1.6;color:#9aa9be;margin:13px 0 0}
+    .intel-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.intel-stat{border-radius:9px;background:#0b1220;border:1px solid #24314a;padding:10px}.intel-stat label{display:block;font-size:8px;letter-spacing:.1em;color:#8291aa}.intel-stat strong{display:block;font-size:15px;margin-top:6px}
+    .action-area{padding:14px 15px}
+    .action-area .section-label{margin-bottom:11px}
+    .action-stack{display:grid;gap:8px}
+    .primary-btn,.secondary-btn,.danger-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:9px;padding:11px 12px;cursor:pointer;font-size:11px;font-weight:850;transition:transform .15s,opacity .15s}
+    .primary-btn{border:1px solid color-mix(in srgb,var(--player-color) 70%,white 8%);background:var(--player-color);color:#07111b}
+    .secondary-btn{border:1px solid #34445f;background:#1a263c;color:#e0e9f7}
+    .danger-btn{border:1px solid #a84f5e;background:#3b1c29;color:#ffc5cc}
+    .primary-btn:hover:not(:disabled),.secondary-btn:hover:not(:disabled),.danger-btn:hover:not(:disabled){transform:translateY(-1px)}
+    button:disabled{opacity:.35;cursor:not-allowed}
+    .hint{font-size:10px;line-height:1.5;color:#8494ad;margin:11px 0 0}
+    .target-box{padding:11px;margin-top:10px;border:1px dashed #465a76;background:#0b1322;border-radius:9px}
+    .target-box .label{color:#889bb5;font-size:8px;letter-spacing:.14em;font-weight:850}
+    .target-box strong{display:block;font-size:12px;margin-top:5px}
+    .target-box p{font-size:9px;color:#9aaac0;line-height:1.5;margin:5px 0 0}
+    .footer{max-width:1600px;margin:0 auto;padding:0 22px 22px;color:#596b86;font-size:9px;display:flex;justify-content:space-between;gap:12px}
+    .overlay{position:fixed;inset:0;background:#050812e8;backdrop-filter:blur(12px);z-index:30;display:grid;place-items:center;padding:20px}
+    .overlay.hidden{display:none}
+    .setup-card{width:min(760px,100%);border:1px solid #34415d;border-radius:19px;background:radial-gradient(ellipse at 50% 0%,#253554,#111827 56%,#0c1220);box-shadow:0 32px 100px #0009;padding:30px}
+    .setup-top{text-align:center}.setup-symbol{display:grid;place-items:center;margin:0 auto 15px;width:54px;height:54px;border:1px solid #ba9d5b;border-radius:16px;font-size:27px;color:#f2d386;background:#24251f}.setup-kicker{font-size:9px;letter-spacing:.24em;color:#d9bd73;font-weight:900}.setup-title{font-size:clamp(26px,5vw,39px);font-weight:950;letter-spacing:-.04em;margin:10px 0 7px}.setup-title span{color:#f0cd78}.setup-desc{max-width:490px;margin:0 auto;color:#a7b5ca;font-size:12px;line-height:1.65}
+    .faction-choice{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0 16px}.choice{padding:15px 13px;border:1px solid #34415a;background:#0d1524;border-radius:13px;text-align:left;color:#eff4fc;cursor:pointer;min-height:155px}.choice:hover,.choice.active{border-color:var(--choice-color);background:color-mix(in srgb,var(--choice-color) 10%,#0d1524);box-shadow:0 0 0 1px color-mix(in srgb,var(--choice-color) 20%,transparent)}.choice-mark{font-size:24px;color:var(--choice-color)}.choice-title{font-size:13px;font-weight:900;margin-top:12px}.choice-role{font-size:9px;color:var(--choice-color);letter-spacing:.1em;font-weight:850;margin-top:5px}.choice-desc{font-size:10px;line-height:1.5;color:#9aa9be;margin-top:9px}
+    .launch-btn{width:100%;background:linear-gradient(90deg,#e8c66f,#f6df9b);border:0;border-radius:10px;color:#16120a;font-weight:950;letter-spacing:.1em;padding:14px;cursor:pointer}.setup-note{text-align:center;font-size:9px;color:#6f819c;margin:13px 0 0}
+    .result-head{font-size:30px;font-weight:950;text-align:center}.result-head.win{color:#f3d17d}.result-head.lose{color:#ff8292}.result-copy{text-align:center;color:#b2bfd1;font-size:12px;line-height:1.65;margin:10px auto 22px;max-width:450px}
+    .toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:all .2s;background:#ecf3ff;color:#121b2a;border-radius:10px;padding:11px 16px;font-size:11px;font-weight:850;box-shadow:0 10px 30px #0007;z-index:40;max-width:calc(100vw - 32px)}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:1120px){.layout{grid-template-columns:210px minmax(380px,1fr);}.right-panel{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;align-items:start}.right-panel .turn-card{grid-column:1/-1}.right-panel .intel,.right-panel .action-area{min-height:100%}.left-panel{gap:10px}.planet-node{width:100px}}
+    @media(max-width:720px){.topbar{height:auto;min-height:66px;padding:12px 14px;gap:10px}.brand-mark{width:34px;height:34px}.brand-name{font-size:12px;letter-spacing:.1em}.brand-sub{font-size:8px;letter-spacing:.12em}.top-meta{gap:9px}.phase{display:none}.turn-chip{font-size:9px}.layout{display:flex;flex-direction:column;padding:10px;gap:10px}.left-panel{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:9px}.campaign-card{grid-column:1/-1}.campaign-name{font-size:16px}.campaign-copy{max-width:500px}.stat-grid{gap:6px}.stat{padding:9px}.stat-value{font-size:18px}.faction-summary{grid-column:1/-1}.faction-list{grid-template-columns:repeat(3,1fr);gap:5px}.faction-row{display:block;padding:8px}.faction-sigil{width:26px;height:26px;margin-bottom:7px}.faction-row .name{font-size:9px}.faction-row .desc{font-size:8px}.faction-row .count{display:none}.log-panel{grid-column:1/-1}.log-list{grid-template-columns:1fr 1fr;gap:8px}.log-item{font-size:9px}.map-panel{width:100%}.map-head{padding:13px}.map-heading{font-size:14px}.map-wrap{padding:7px}.galaxy-map{min-height:320px;aspect-ratio:1/1.05}.planet-node{width:clamp(62px,18vw,92px);min-height:42px;padding:5px;border-radius:8px}.planet-name{font-size:clamp(7px,2.1vw,9px)}.planet-tier{font-size:6px}.planet-bottom{margin-top:4px;font-size:7px}.troops{font-size:8px;padding:2px 4px}.owner-tag{font-size:6px}.map-caption{font-size:8px;flex-direction:column;gap:5px;padding:9px 3px}.right-panel{width:100%;display:grid;grid-template-columns:1fr;gap:9px}.right-panel .turn-card{grid-column:auto}.right-panel .intel,.right-panel .action-area{min-height:auto}.turn-card{padding:13px}.turn-faction{font-size:17px}.footer{padding:0 12px 16px;font-size:8px}.setup-card{padding:21px 15px}.faction-choice{gap:6px;margin:18px 0 13px}.choice{padding:10px 8px;min-height:165px}.choice-mark{font-size:20px}.choice-title{font-size:10px}.choice-role{font-size:8px;line-height:1.3}.choice-desc{font-size:9px}.setup-desc{font-size:11px}}
+    @media(max-width:390px){.faction-list{grid-template-columns:1fr}.faction-row{display:flex}.faction-sigil{margin-bottom:0}.faction-row .count{display:block}.left-panel{grid-template-columns:1fr}.campaign-card,.faction-summary,.log-panel{grid-column:auto}.log-list{grid-template-columns:1fr}.choice-desc{font-size:8px}.choice{min-height:174px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">✦</div>
+      <div><div class="brand-name">RISK <span style="color:#d8bd73">//</span> STAR WARS</div><div class="brand-sub">CONQUISTA GALÁCTICA</div></div>
+    </div>
+    <div class="top-meta"><div class="phase">PROTÓTIPO JOGÁVEL · 0.1</div><div class="turn-chip"><span class="turn-dot"></span><span id="topTurn">AGUARDANDO CAMPANHA</span></div></div>
+  </header>
+
+  <main class="layout">
+    <aside class="left-panel">
+      <section class="campaign-card">
+        <div class="eyebrow">Comando estratégico</div>
+        <div class="campaign-name">O destino da galáxia está em suas mãos.</div>
+        <p class="campaign-copy">Conquiste sistemas, distribua tropas e escolha quando atacar. Cada planeta pode mudar o equilíbrio de poder.</p>
+      </section>
+      <section class="stat-grid">
+        <div class="stat"><div class="stat-label">Planetas</div><div class="stat-value" id="statPlanets">—</div><div class="stat-note">sob seu controle</div></div>
+        <div class="stat"><div class="stat-label">Tropas</div><div class="stat-value" id="statTroops">—</div><div class="stat-note">força terrestre</div></div>
+        <div class="stat"><div class="stat-label">Domínio</div><div class="stat-value" id="statPercent">—</div><div class="stat-note">dos sistemas</div></div>
+        <div class="stat"><div class="stat-label">Meta</div><div class="stat-value">10</div><div class="stat-note">planetas para vencer</div></div>
+      </section>
+      <section class="panel faction-summary">
+        <div class="panel-head"><div><div class="eyebrow">Equilíbrio de poder</div><div class="panel-title">Facções</div></div><span class="eyebrow">TERRITÓRIO</span></div>
+        <div class="faction-list" id="factionList" style="padding:10px"></div>
+      </section>
+      <section class="panel log-panel">
+        <div class="eyebrow">Registro tático</div><div class="panel-title">Últimos acontecimentos</div>
+        <div class="log-list" id="eventLog"></div>
+      </section>
+    </aside>
+
+    <section class="panel map-panel">
+      <div class="map-head">
+        <div><div class="eyebrow">Teatro de operações</div><div class="map-heading">Mapa da galáxia</div><div class="map-sub">Selecione um planeta para inspecionar ou preparar um ataque.</div></div>
+        <div class="map-actions"><button class="small-btn" id="helpBtn" type="button">Como jogar</button><button class="small-btn" id="restartBtn" type="button">Reiniciar</button></div>
+      </div>
+      <div class="map-wrap">
+        <div class="galaxy-map" id="galaxyMap" aria-label="Mapa estratégico interativo">
+          <div class="map-grid"></div><div class="nebula"></div>
+          <svg class="planet-links" id="planetLinks" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="map-vignette"></div>
+        </div>
+        <div class="map-caption"><span><strong>COMO OPERAR:</strong> escolha um planeta seu e clique em um planeta inimigo conectado para definir o alvo.</span><span>◇ Cada linha representa uma rota de acesso.</span></div>
+      </div>
+    </section>
+
+    <aside class="right-panel">
+      <section class="turn-card">
+        <div class="turn-card-top"><div class="turn-label">SUA CAMPANHA</div><div class="turn-round" id="roundLabel">Rodada —</div></div>
+        <div class="turn-faction" id="turnFaction">Escolha uma facção</div>
+        <div class="turn-description" id="turnDescription">Defina sua estratégia e dispute o controle dos sistemas.</div>
+        <div class="resource-row">
+          <div class="resource"><div class="resource-label">Reforços disponíveis</div><div class="resource-value" id="reinforceCount">—</div></div>
+          <div class="resource"><div class="resource-label">Créditos galácticos</div><div class="resource-value" id="creditCount">—</div></div>
+        </div>
+      </section>
+      <section class="panel intel" id="planetIntel">
+        <div class="eyebrow">Inteligência planetária</div>
+        <div class="intel-title" style="margin-top:8px"><div class="intel-name" id="intelName">Nenhum planeta selecionado</div><div class="intel-mark">✦</div></div>
+        <div class="intel-meta" id="intelMeta"><span class="pill">AGUARDANDO SELEÇÃO</span></div>
+        <p class="intel-desc" id="intelDesc">Clique em um planeta no mapa para ver defesa, nível e benefício estratégico.</p>
+        <div class="intel-stats">
+          <div class="intel-stat"><label>TROPAS NO SOLO</label><strong id="intelTroops">—</strong></div>
+          <div class="intel-stat"><label>VALOR ECONÔMICO</label><strong id="intelIncome">—</strong></div>
+        </div>
+      </section>
+      <section class="panel action-area">
+        <div class="section-label">Ações de comando</div>
+        <div class="action-stack">
+          <button class="primary-btn" id="reinforceBtn" type="button" disabled>＋ Reforçar planeta · 1 unidade</button>
+          <button class="secondary-btn" id="mercenaryBtn" type="button" disabled>✦ Contratar 2 tropas</button>
+          <button class="danger-btn" id="attackBtn" type="button" disabled>⚔ Atacar planeta selecionado</button>
+          <button class="secondary-btn" id="clearTargetBtn" type="button" disabled>Limpar alvo</button>
+          <button class="primary-btn" id="endTurnBtn" type="button" disabled>Encerrar turno →</button>
+        </div>
+        <div class="target-box" id="targetBox"><div class="label">ALVO DO ATAQUE</div><strong id="targetName">Nenhum alvo definido</strong><p id="targetHelp">Selecione um planeta seu e depois um planeta adjacente para preparar a ofensiva.</p></div>
+        <p class="hint" id="actionHint">Os reforços são calculados no início de cada turno. Planetas com mais tropas defendem melhor.</p>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer"><span>RISK STAR WARS · PROTÓTIPO DE ESTRATÉGIA · V0.1</span><span>Partida local contra IA · progresso não salvo entre sessões</span></footer>
+
+  <div class="overlay" id="setupOverlay">
+    <div class="setup-card">
+      <div class="setup-top"><div class="setup-symbol">✦</div><div class="setup-kicker">UMA GALÁXIA · TRÊS DESTINOS</div><div class="setup-title">Escolha seu <span>lado.</span></div><p class="setup-desc">Escolha sua facção e dispute o domínio galáctico contra as outras duas. Controle 10 planetas para vencer a primeira campanha.</p></div>
+      <div class="faction-choice" id="factionChoices"></div>
+      <button class="launch-btn" id="startBtn" type="button">INICIAR CAMPANHA</button>
+      <p class="setup-note">Campanha demonstrativa · batalhas simuladas com dados · decisões e resultado em tempo real</p>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="resultOverlay">
+    <div class="setup-card" style="max-width:540px">
+      <div class="setup-top"><div class="setup-symbol">✦</div><div class="setup-kicker">FIM DE CAMPANHA</div><div class="result-head" id="resultTitle">Vitória</div><p class="result-copy" id="resultCopy"></p></div>
+      <button class="launch-btn" id="playAgainBtn" type="button">JOGAR NOVAMENTE</button>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    'use strict';
+    const factions = {
+      jedi:{id:'jedi',name:'Ordem Jedi',short:'JEDI',mark:'✧',color:'#65d9e8',role:'DEFESA E CONTROLE',desc:'Resiliência defensiva. +1 nos resultados de defesa.',strategy:'Use defesas fortes e avance com cuidado.',credits:5},
+      sith:{id:'sith',name:'Império Sith',short:'SITH',mark:'✹',color:'#ff6b7c',role:'ATAQUE E PRESSÃO',desc:'Ataques agressivos. +1 nos resultados de ataque.',strategy:'Concentre tropas para romper as linhas inimigas.',credits:5},
+      bounty:{id:'bounty',name:'Caçadores de Recompensas',short:'CAÇADORES',mark:'✦',color:'#efb85c',role:'ECONOMIA E FLEXIBILIDADE',desc:'Economia superior. Mercenários custam 3 créditos, em vez de 4.',strategy:'Explore os créditos para manter a pressão em várias frentes.',credits:7}
+    };
+    const initialPlanets = [
+      {id:'coruscant',name:'Coruscant',x:49,y:37,owner:'jedi',troops:5,tier:'ALTO',income:3,bonus:'Capital política: concede +1 reforço no início do turno.',desc:'Centro político da galáxia e principal bastião da Ordem Jedi.',links:['naboo','alderaan','dagobah','mandalore']},
+      {id:'naboo',name:'Naboo',x:39,y:24,owner:'jedi',troops:3,tier:'MÉDIO',income:2,bonus:'Comércio estável: gera créditos.',desc:'Um mundo diplomático com rotas comerciais relevantes.',links:['coruscant','hoth','alderaan']},
+      {id:'alderaan',name:'Alderaan',x:61,y:23,owner:'jedi',troops:3,tier:'MÉDIO',income:2,bonus:'Influência política: gera créditos.',desc:'Mundo central de influência política e relações diplomáticas.',links:['coruscant','naboo','kashyyyk','korriban']},
+      {id:'korriban',name:'Korriban',x:82,y:18,owner:'sith',troops:5,tier:'ALTO',income:3,bonus:'Capital Sith: concede +1 reforço no início do turno.',desc:'Mundo ancestral Sith, cercado por história e poder sombrio.',links:['alderaan','bespin','mustafar']},
+      {id:'mustafar',name:'Mustafar',x:67,y:77,owner:'sith',troops:3,tier:'MÉDIO',income:2,bonus:'Forjas industriais: gera créditos.',desc:'Um mundo vulcânico útil para sustentar operações militares.',links:['korriban','geonosis','kamino','endor']},
+      {id:'geonosis',name:'Geonosis',x:45,y:79,owner:'sith',troops:3,tier:'MÉDIO',income:2,bonus:'Produção militar: gera créditos.',desc:'Instalações industriais e uma posição valiosa para mobilizar tropas.',links:['mustafar','tatooine','kamino','ryloth']},
+      {id:'nalhutta',name:'Nal Hutta',x:84,y:65,owner:'bounty',troops:5,tier:'ALTO',income:3,bonus:'Capital dos caçadores: +1 reforço no início do turno.',desc:'Centro de negócios clandestinos e contratos de recompensa.',links:['tatooine','endor','bespin']},
+      {id:'tatooine',name:'Tatooine',x:28,y:62,owner:'bounty',troops:3,tier:'MÉDIO',income:2,bonus:'Rotas de contrabando: gera créditos.',desc:'Planeta desértico com rotas independentes e oportunidades de contrabando.',links:['nalhutta','geonosis','mandalore','ryloth']},
+      {id:'mandalore',name:'Mandalore',x:26,y:43,owner:'bounty',troops:3,tier:'MÉDIO',income:2,bonus:'Tradição guerreira: gera créditos.',desc:'Uma cultura marcial que torna o planeta estratégico para o controle regional.',links:['tatooine','coruscant','hoth','ryloth']},
+      {id:'hoth',name:'Hoth',x:22,y:17,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Posição defensiva: fácil de tomar, útil como fronteira.',desc:'Mundo gelado e remoto. Uma conquista inicial relativamente acessível.',links:['naboo','mandalore','kashyyyk']},
+      {id:'kashyyyk',name:'Kashyyyk',x:69,y:36,owner:null,troops:2,tier:'MÉDIO',income:2,bonus:'Recursos naturais: gera créditos.',desc:'Mundo florestal com recursos naturais e acesso a rotas centrais.',links:['hoth','alderaan','bespin','dagobah']},
+      {id:'bespin',name:'Bespin',x:84,y:41,owner:null,troops:2,tier:'BAIXO',income:2,bonus:'Extração de gás: aumenta a receita.',desc:'Uma plataforma econômica importante entre as regiões centrais e externas.',links:['kashyyyk','korriban','nalhutta','dagobah']},
+      {id:'dagobah',name:'Dagobah',x:51,y:54,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Refúgio isolado: território de baixo custo.',desc:'Mundo pantanoso e isolado, adequado para uma expansão rápida.',links:['coruscant','kashyyyk','bespin','kamino']},
+      {id:'kamino',name:'Kamino',x:56,y:68,owner:null,troops:2,tier:'MÉDIO',income:2,bonus:'Clonagem: gera créditos e facilita a expansão.',desc:'Planeta oceânico conhecido por tecnologia de clonagem e produção militar.',links:['dagobah','geonosis','mustafar','endor']},
+      {id:'endor',name:'Endor',x:74,y:55,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Ponto de passagem: conecta frentes de batalha.',desc:'Florestas densas e posição valiosa para conectar campanhas regionais.',links:['kamino','mustafar','nalhutta']},
+      {id:'ryloth',name:'Ryloth',x:13,y:48,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Rotas comerciais regionais: gera créditos.',desc:'Mundo de fronteira que abre acesso a vários territórios do sul.',links:['mandalore','tatooine','geonosis']}
+    ];
+    let planets = [];
+    let humanFaction = 'jedi';
+    let selectedFaction = 'jedi';
+    let selectedPlanetId = null;
+    let targetPlanetId = null;
+    let currentFaction = 'jedi';
+    let round = 0;
+    let reinforcements = 0;
+    let credits = {jedi:5,sith:5,bounty:7};
+    let mercenaryUsed = false;
+    let started = false;
+    let gameOver = false;
+    let logs = [];
+    let toastTimer = null;
+    const $ = id => document.getElementById(id);
+    const factionIds = ['jedi','sith','bounty'];
+
+    function init(){
+      renderChoices();
+      $('startBtn').addEventListener('click',startCampaign);
+      $('restartBtn').addEventListener('click',()=>{if(started) showToast('A campanha será reiniciada.'); $('setupOverlay').classList.remove('hidden');});
+      $('playAgainBtn').addEventListener('click',()=>{$('resultOverlay').classList.add('hidden');$('setupOverlay').classList.remove('hidden');});
+      $('helpBtn').addEventListener('click',showHelp);
+      $('reinforceBtn').addEventListener('click',reinforcePlanet);
+      $('mercenaryBtn').addEventListener('click',hireMercenaries);
+      $('attackBtn').addEventListener('click',attackSelected);
+      $('clearTargetBtn').addEventListener('click',clearTarget);
+      $('endTurnBtn').addEventListener('click',endTurn);
+      render();
+    }
+
+    function renderChoices(){
+      $('factionChoices').innerHTML = factionIds.map(id=>{
+        const f=factions[id];
+        return '<button type="button" class="choice '+(id===selectedFaction?'active':'')+'" data-faction="'+id+'" style="--choice-color:'+f.color+'"><div class="choice-mark">'+f.mark+'</div><div class="choice-title">'+f.name+'</div><div class="choice-role">'+f.role+'</div><div class="choice-desc">'+f.desc+'</div></button>';
+      }).join('');
+      $('factionChoices').querySelectorAll('[data-faction]').forEach(btn=>btn.addEventListener('click',()=>{
+        selectedFaction=btn.dataset.faction;
+        renderChoices();
+      }));
+    }
+
+    function startCampaign(){
+      humanFaction=selectedFaction;
+      planets=initialPlanets.map(p=>({...p}));
+      currentFaction=humanFaction; round=1; reinforcements=0;
+      credits={jedi:factions.jedi.credits,sith:factions.sith.credits,bounty:factions.bounty.credits};
+      selectedPlanetId=capitalId(humanFaction); targetPlanetId=null; mercenaryUsed=false; started=true; gameOver=false; logs=[];
+      $('setupOverlay').classList.add('hidden');
+      addLog('✦','Campanha iniciada',factions[humanFaction].name+' entrou na disputa pela galáxia.');
+      startHumanTurn();
+      render();
+      showToast('Campanha iniciada. Escolha seus movimentos.');
+    }
+
+    function capitalId(faction){
+      return faction==='jedi'?'coruscant':faction==='sith'?'korriban':'nalhutta';
+    }
+    function planet(id){return planets.find(p=>p.id===id);}
+    function ownedPlanets(faction){return planets.filter(p=>p.owner===faction);}
+    function getFactionColor(owner){return owner?factions[owner].color:'#65748d';}
+    function calcReinforcements(faction){
+      const held=ownedPlanets(faction);
+      if(!held.length)return 0;
+      return Math.max(3,Math.floor(held.length/3))+(held.some(p=>p.id===capitalId(faction))?1:0);
+    }
+    function addLog(icon,title,detail){
+      logs.unshift({icon,title,detail});
+      logs=logs.slice(0,6);
+      renderLog();
+    }
+    function renderLog(){
+      $('eventLog').innerHTML=logs.length?logs.map(item=>'<div class="log-item"><div class="log-icon">'+item.icon+'</div><div><strong>'+escapeHTML(item.title)+'</strong><br>'+escapeHTML(item.detail)+'</div></div>').join(''):'<div class="log-item"><div class="log-icon">◎</div><div>Aguardando os primeiros movimentos da campanha.</div></div>';
+    }
+    function escapeHTML(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+    function renderMap(){
+      const svg=$('planetLinks');
+      const map=$('galaxyMap');
+      svg.innerHTML='';
+      planets.forEach(p=>{
+        p.links.forEach(linkId=>{
+          const q=planet(linkId);
+          if(!q || p.id>q.id)return;
+          const active=selectedPlanetId===p.id&&targetPlanetId===q.id || selectedPlanetId===q.id&&targetPlanetId===p.id || selectedPlanetId===p.id&&p.links.includes(q.id);
+          const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+          line.setAttribute('x1',p.x*10);line.setAttribute('y1',p.y*6.2);line.setAttribute('x2',q.x*10);line.setAttribute('y2',q.y*6.2);
+          line.setAttribute('class','link-line'+(active?' active':''));
+          svg.appendChild(line);
+        });
+      });
+      map.querySelectorAll('.planet-node').forEach(n=>n.remove());
+      planets.forEach(p=>{
+        const node=document.createElement('button');
+        const isSelected=p.id===selectedPlanetId;
+        const isTarget=p.id===targetPlanetId;
+        node.type='button';
+        node.className='planet-node'+(isSelected?' selected':'')+(isTarget?' target':'')+(!p.owner?' neutral':'');
+        node.style.left=p.x+'%';node.style.top=p.y+'%';node.style.setProperty('--owner-color',getFactionColor(p.owner));
+        node.setAttribute('aria-label',p.name+', '+(p.owner?factions[p.owner].name:'Neutro')+', '+p.troops+' tropas');
+        node.title=p.name+' · '+(p.owner?factions[p.owner].name:'Neutro')+' · '+p.troops+' tropas';
+        const ownerTag=p.owner?factions[p.owner].short:'NEUTRO';
+        node.innerHTML='<div class="planet-top"><span class="planet-name">'+p.name+'</span><span class="planet-tier">'+(p.tier==='ALTO'?'III':p.tier==='MÉDIO'?'II':'I')+'</span></div><div class="planet-bottom"><span class="owner-tag">'+ownerTag+'</span><span class="troops">⚔ '+p.troops+'</span></div>';
+        node.addEventListener('click',()=>selectPlanet(p.id));
+        map.appendChild(node);
+      });
+    }
+
+    function selectPlanet(id){
+      if(!started||gameOver)return;
+      const p=planet(id);
+      if(!p)return;
+      if(p.owner===humanFaction){
+        selectedPlanetId=id;targetPlanetId=null;
+      }else{
+        const source=planet(selectedPlanetId);
+        if(source&&source.owner===humanFaction&&source.id!==id&&source.links.includes(id)&&source.troops>1){
+          targetPlanetId=id;
+        }else{
+          selectedPlanetId=id;targetPlanetId=null;
+          if(p.owner===humanFaction)selectedPlanetId=id;
+          else if(source&&source.owner===humanFaction&&!source.links.includes(id))showToast('Esse planeta não está conectado à origem selecionada.');
+        }
+      }
+      render();
+    }
+
+    function render(){
+      renderMap();
+      renderLog();
+      const mine=ownedPlanets(humanFaction);
+      const troopCount=mine.reduce((sum,p)=>sum+p.troops,0);
+      $('statPlanets').textContent=started?mine.length:'—';
+      $('statTroops').textContent=started?troopCount:'—';
+      $('statPercent').textContent=started?Math.round(mine.length/planets.length*100)+'%':'—';
+      $('topTurn').textContent=started?(gameOver?'CAMPANHA ENCERRADA':factions[currentFaction].short+' · RODADA '+round):'AGUARDANDO CAMPANHA';
+      $('topTurn').style.color=started?factions[currentFaction].color:'#92a1b7';
+      $('roundLabel').textContent=started?'Rodada '+round:'Rodada —';
+      $('turnFaction').textContent=started?factions[currentFaction].name:'Escolha uma facção';
+      $('turnFaction').style.color=started?factions[currentFaction].color:'#e9f0fb';
+      $('turnDescription').textContent=started?(currentFaction===humanFaction?factions[humanFaction].strategy:'A IA está planejando a próxima ofensiva.'):'Defina sua estratégia e dispute o controle dos sistemas.';
+      $('reinforceCount').textContent=started&&currentFaction===humanFaction?reinforcements:'—';
+      $('creditCount').textContent=started?credits[humanFaction]:'—';
+      $('factionList').innerHTML=factionIds.map(id=>{
+        const f=factions[id],count=ownedPlanets(id).length,troops=ownedPlanets(id).reduce((s,p)=>s+p.troops,0);
+        return '<div class="faction-row" style="border-color:'+(id===humanFaction&&started?f.color+'80':'#253149')+'"><div class="faction-sigil" style="color:'+f.color+';background:'+f.color+'18">'+f.mark+'</div><div style="min-width:0"><div class="name">'+f.short+(id===humanFaction&&started?' · VOCÊ':'')+'</div><div class="desc">'+count+' planetas · '+troops+' tropas</div></div><div class="count" style="color:'+f.color+'">'+count+'</div></div>';
+      }).join('');
+      renderIntel();
+      const selected=planet(selectedPlanetId);
+      const target=planet(targetPlanetId);
+      const sourceOk=started&&!gameOver&&currentFaction===humanFaction&&selected&&selected.owner===humanFaction;
+      $('reinforceBtn').disabled=!(sourceOk&&reinforcements>0);
+      $('reinforceBtn').textContent='＋ Reforçar planeta · 1 unidade ('+(sourceOk?reinforcements:reinforcements)+' disponíveis)';
+      const mercCost=humanFaction==='bounty'?3:4;
+      $('mercenaryBtn').disabled=!(sourceOk&&credits[humanFaction]>=mercCost&&!mercenaryUsed);
+      $('mercenaryBtn').textContent='✦ Contratar 2 tropas · '+mercCost+' créditos';
+      const validTarget=sourceOk&&target&&selected.links.includes(target.id)&&selected.id!==target.id&&selected.troops>1;
+      $('attackBtn').disabled=!validTarget;
+      $('clearTargetBtn').disabled=!(targetPlanetId!==null);
+      $('endTurnBtn').disabled=!started||gameOver;
+      $('endTurnBtn').textContent=gameOver?'Campanha encerrada':'Encerrar turno →';
+      if(target&&selected){
+        $('targetName').textContent=target.name;
+        $('targetHelp').textContent=selected.name+' → '+target.name+' · '+target.troops+' tropas defendendo'+(target.owner?' por '+factions[target.owner].name:' neutras')+'.';
+      }else{
+        $('targetName').textContent='Nenhum alvo definido';
+        $('targetHelp').textContent='Selecione um planeta seu e depois um planeta adjacente para preparar a ofensiva.';
+      }
+      $('actionHint').textContent=started?'Ataque: dados comparados em pares; em empate, a defesa vence. Controle 10 planetas para dominar a galáxia.':'Inicie a campanha para ativar os comandos.';
+      if(!started){$('reinforceBtn').disabled=true;$('mercenaryBtn').disabled=true;$('attackBtn').disabled=true;$('endTurnBtn').disabled=true;}
+      if(gameOver){$('reinforceBtn').disabled=true;$('mercenaryBtn').disabled=true;$('attackBtn').disabled=true;}
+    }
+
+    function renderIntel(){
+      const p=planet(targetPlanetId)||planet(selectedPlanetId);
+      if(!p){
+        $('intelName').textContent='Nenhum planeta selecionado';
+        $('intelMeta').innerHTML='<span class="pill">AGUARDANDO SELEÇÃO</span>';
+        $('intelDesc').textContent='Clique em um planeta no mapa para ver defesa, nível e benefício estratégico.';
+        $('intelTroops').textContent='—';$('intelIncome').textContent='—';
+        return;
+      }
+      $('intelName').textContent=p.name;
+      $('intelName').style.color=p.owner?factions[p.owner].color:'#d2dbea';
+      $('intelMeta').innerHTML='<span class="pill">'+(p.owner?factions[p.owner].name.toUpperCase():'TERRITÓRIO NEUTRO')+'</span><span class="pill">NÍVEL '+p.tier+'</span>'+(p.id===capitalId(p.owner)?'<span class="pill" style="border-color:#aa9357;color:#e1c47a">CAPITAL</span>':'');
+      $('intelDesc').textContent=p.desc+' '+p.bonus;
+      $('intelTroops').textContent=p.troops+' '+(p.troops===1?'tropa':'tropas');
+      $('intelIncome').textContent='+'+p.income+' créditos/turno';
+    }
+
+    function startHumanTurn(){
+      if(checkVictory())return;
+      currentFaction=humanFaction;
+      reinforcements=calcReinforcements(humanFaction);
+      mercenaryUsed=false;
+      credits[humanFaction]+=ownedPlanets(humanFaction).reduce((sum,p)=>sum+p.income,0);
+      addLog('◈','Rodada '+round,'Reforços disponíveis: '+reinforcements+'. Créditos arrecadados nos planetas controlados.');
+      render();
+    }
+
+    function reinforcePlanet(){
+      const p=planet(selectedPlanetId);
+      if(!p||p.owner!==humanFaction||reinforcements<1||gameOver)return;
+      p.troops+=1;reinforcements-=1;
+      addLog('＋','Reforço enviado', '1 tropa posicionada em '+p.name+'.');
+      render();
+    }
+    function hireMercenaries(){
+      const p=planet(selectedPlanetId),cost=humanFaction==='bounty'?3:4;
+      if(!p||p.owner!==humanFaction||credits[humanFaction]<cost||mercenaryUsed||gameOver)return;
+      credits[humanFaction]-=cost;p.troops+=2;mercenaryUsed=true;
+      addLog('✦','Mercenários contratados','2 tropas contratadas para '+p.name+' por '+cost+' créditos.');
+      render();showToast('2 tropas foram mobilizadas em '+p.name+'.');
+    }
+    function clearTarget(){targetPlanetId=null;render();}
+
+    function rollDice(count,modifier){
+      const values=[];
+      for(let i=0;i<count;i++)values.push(Math.min(6,1+Math.floor(Math.random()*6)+(modifier||0)));
+      return values.sort((a,b)=>b-a);
+    }
+    function resolveBattle(source,target,attackerFaction,record,autoCapture){
+      const attackerCount=Math.min(3,source.troops-1);
+      const defenderCount=Math.min(2,target.troops);
+      if(attackerCount<1||defenderCount<1)return {ok:false,captured:false};
+      const attackMod=attackerFaction==='sith'?1:0;
+      const defendMod=target.owner==='jedi'?1:0;
+      const attackDice=rollDice(attackerCount,attackMod);
+      const defendDice=rollDice(defenderCount,defendMod);
+      let attackerLoss=0,defenderLoss=0;
+      for(let i=0;i<Math.min(attackDice.length,defendDice.length);i++){
+        if(attackDice[i]>defendDice[i])defenderLoss++;
+        else attackerLoss++;
+      }
+      for(let i=0;i<attackerLoss;i++){
+        // Sempre preserva uma tropa na origem e, quando a conquista termina nesta rodada, uma unidade para ocupar o alvo.
+        if(source.troops>2)source.troops-=1;
+      }
+      target.troops=Math.max(0,target.troops-defenderLoss);
+      const captured=target.troops===0;
+      if(captured){
+        const moved=Math.max(1,Math.min(source.troops-1,Math.max(1,attackDice.length)));
+        source.troops-=moved;
+        const oldOwner=target.owner;
+        target.owner=attackerFaction;target.troops=moved;
+        if(attackerFaction==='bounty')credits.bounty+=2;
+        if(record)addLog('⚔','Planeta conquistado',factions[attackerFaction].name+' tomou '+target.name+(oldOwner?' de '+factions[oldOwner].name:'')+'.');
+      }else if(record){
+        addLog('⚔','Combate em '+target.name,'Ataque '+attackDice.join(',')+' · Defesa '+defendDice.join(',')+'. Perdas: '+attackerLoss+' sua(s), '+defenderLoss+' inimiga(s).');
+      }
+      return {ok:true,captured,attackDice,defendDice,attackerLoss,defenderLoss};
+    }
+
+    function attackSelected(){
+      const source=planet(selectedPlanetId),target=planet(targetPlanetId);
+      if(!source||!target||source.owner!==humanFaction||!source.links.includes(target.id)||source.troops<=1||gameOver)return;
+      const result=resolveBattle(source,target,humanFaction,true,true);
+      if(!result.ok)return;
+      if(result.captured){
+        credits[humanFaction]+=1;
+        selectedPlanetId=source.id;targetPlanetId=null;
+        showToast(target.name+' conquistado!');
+      }else if(source.troops<=1){targetPlanetId=null;showToast('A origem ficou sem tropas suficientes para atacar.');}
+      if(checkVictory()){render();return;}
+      render();
+    }
+
+    function endTurn(){
+      if(!started||gameOver)return;
+      addLog('◷','Turno encerrado',factions[humanFaction].name+' encerrou sua fase. As facções rivais estão agindo.');
+      reinforcements=0;
+      for(const factionId of factionIds){
+        if(factionId===humanFaction)continue;
+        aiTurn(factionId);
+        if(checkVictory()){render();return;}
+      }
+      round++;
+      selectedPlanetId=capitalId(humanFaction);targetPlanetId=null;
+      startHumanTurn();
+    }
+
+    function aiTurn(factionId){
+      const held=ownedPlanets(factionId);
+      if(!held.length){addLog('◎','Facção eliminada',factions[factionId].name+' perdeu todos os planetas.');return;}
+      let pool=calcReinforcements(factionId);
+      credits[factionId]+=held.reduce((sum,p)=>sum+p.income,0);
+      const frontiers=held.filter(p=>p.links.some(id=>planet(id)&&planet(id).owner!==factionId));
+      frontiers.sort((a,b)=>b.troops-a.troops);
+      for(let i=0;i<pool;i++){
+        const choice=frontiers[i%Math.max(1,frontiers.length)]||held[0];
+        choice.troops++;
+      }
+      let attacks=0;
+      while(attacks<4){
+        const sources=ownedPlanets(factionId).filter(p=>p.troops>2&&p.links.some(id=>planet(id)&&planet(id).owner!==factionId));
+        sources.sort((a,b)=>b.troops-a.troops);
+        if(!sources.length)break;
+        let attack=null;
+        for(const source of sources){
+          const targets=source.links.map(id=>planet(id)).filter(t=>t&&t.owner!==factionId);
+          targets.sort((a,b)=>a.troops-b.troops);
+          if(targets.length){attack={source,target:targets[0]};break;}
+        }
+        if(!attack)break;
+        const result=resolveBattle(attack.source,attack.target,factionId,false,true);
+        attacks++;
+        if(!result.ok)break;
+        if(result.captured){
+          credits[factionId]+=1;
+          addLog('⚔','Ofensiva rival',factions[factionId].name+' conquistou '+attack.target.name+'.');
+        }else{
+          addLog('⚔','Ofensiva rival',factions[factionId].name+' atacou '+attack.target.name+'; defesa resistiu.');
+          if(attack.source.troops<=2)break;
+        }
+      }
+      addLog('◎','Movimento da facção',factions[factionId].name+' reforçou suas fronteiras e realizou '+attacks+' ataque(s).');
+    }
+
+    function checkVictory(){
+      if(gameOver)return true;
+      const winner=factionIds.find(id=>ownedPlanets(id).length>=10);
+      if(!winner)return false;
+      gameOver=true;started=true;currentFaction=winner;
+      const isWin=winner===humanFaction;
+      $('resultTitle').textContent=isWin?'Vitória galáctica':'A galáxia caiu';
+      $('resultTitle').className='result-head '+(isWin?'win':'lose');
+      $('resultCopy').textContent=isWin?'Sua facção controla '+ownedPlanets(winner).length+' planetas. A galáxia reconhece sua supremacia — a campanha foi vencida.':'A facção '+factions[winner].name+' controlou 10 planetas e venceu a campanha. Reorganize suas forças e tente novamente.';
+      $('resultOverlay').classList.remove('hidden');
+      addLog(isWin?'✦':'⚑',isWin?'Vitória alcançada':'Derrota estratégica',factions[winner].name+' atingiu a meta de 10 planetas.');
+      return true;
+    }
+
+    function showHelp(){
+      alert('COMO JOGAR\\n\\n1. Escolha uma facção no início.\\n2. Clique em um planeta seu para defini-lo como origem.\\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\\n6. Encerrar turno permite que as duas facções rivais atuem.\\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\\n\\nControle 10 planetas para vencer. Esta é a primeira versão jogável; diplomacia, heróis, naves e campanhas avançadas ainda serão adicionados.');
+    }
+    function showToast(message){
+      const el=$('toast');el.textContent=message;el.classList.add('show');
+      clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300);
+    }
+
+    init();
+  </script>
+</body>
+</html>
