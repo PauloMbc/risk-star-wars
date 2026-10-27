@@ -466,12 +466,12 @@
         if(attackDice[i]>defendDice[i])defenderLoss++;
         else attackerLoss++;
       }
-      for(let i=0;i<attackerLoss;i++){
-        // Sempre preserva uma tropa na origem e, quando a conquista termina nesta rodada, uma unidade para ocupar o alvo.
-        if(source.troops>2)source.troops-=1;
-      }
       target.troops=Math.max(0,target.troops-defenderLoss);
       const captured=target.troops===0;
+      // Uma origem não pode ficar vazia; em uma captura, guardamos também uma tropa para ocupar o alvo.
+      const maximumLosses = Math.max(0, source.troops - (captured ? 2 : 1));
+      const appliedAttackerLosses = Math.min(attackerLoss, maximumLosses);
+      source.troops -= appliedAttackerLosses;
       if(captured){
         const moved=Math.max(1,Math.min(source.troops-1,Math.max(1,attackDice.length)));
         source.troops-=moved;
@@ -482,7 +482,7 @@
       }else if(record){
         addLog('⚔','Combate em '+target.name,'Ataque '+attackDice.join(',')+' · Defesa '+defendDice.join(',')+'. Perdas: '+attackerLoss+' sua(s), '+defenderLoss+' inimiga(s).');
       }
-      return {ok:true,captured,attackDice,defendDice,attackerLoss,defenderLoss};
+      return {ok:true,captured,attackDice,defendDice,attackerLoss:appliedAttackerLosses,defenderLoss};
     }
 
     function attackSelected(){
