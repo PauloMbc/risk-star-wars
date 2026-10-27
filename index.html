@@ -223,15 +223,15 @@
       {id:'mustafar',name:'Mustafar',x:67,y:77,owner:'sith',troops:3,tier:'MÉDIO',income:2,bonus:'Forjas industriais: gera créditos.',desc:'Um mundo vulcânico útil para sustentar operações militares.',links:['korriban','geonosis','kamino','endor']},
       {id:'geonosis',name:'Geonosis',x:45,y:79,owner:'sith',troops:3,tier:'MÉDIO',income:2,bonus:'Produção militar: gera créditos.',desc:'Instalações industriais e uma posição valiosa para mobilizar tropas.',links:['mustafar','tatooine','kamino','ryloth']},
       {id:'nalhutta',name:'Nal Hutta',x:84,y:65,owner:'bounty',troops:5,tier:'ALTO',income:3,bonus:'Capital dos caçadores: +1 reforço no início do turno.',desc:'Centro de negócios clandestinos e contratos de recompensa.',links:['tatooine','endor','bespin']},
-      {id:'tatooine',name:'Tatooine',x:28,y:62,owner:'bounty',troops:3,tier:'MÉDIO',income:2,bonus:'Rotas de contrabando: gera créditos.',desc:'Planeta desértico com rotas independentes e oportunidades de contrabando.',links:['nalhutta','geonosis','mandalore','ryloth']},
-      {id:'mandalore',name:'Mandalore',x:26,y:43,owner:'bounty',troops:3,tier:'MÉDIO',income:2,bonus:'Tradição guerreira: gera créditos.',desc:'Uma cultura marcial que torna o planeta estratégico para o controle regional.',links:['tatooine','coruscant','hoth','ryloth']},
+      {id:'tatooine',name:'Tatooine',x:29,y:64,owner:'bounty',troops:3,tier:'MÉDIO',income:2,bonus:'Rotas de contrabando: gera créditos.',desc:'Planeta desértico com rotas independentes e oportunidades de contrabando.',links:['nalhutta','geonosis','mandalore','ryloth']},
+      {id:'mandalore',name:'Mandalore',x:25,y:40,owner:'bounty',troops:3,tier:'MÉDIO',income:2,bonus:'Tradição guerreira: gera créditos.',desc:'Uma cultura marcial que torna o planeta estratégico para o controle regional.',links:['tatooine','coruscant','hoth','ryloth']},
       {id:'hoth',name:'Hoth',x:22,y:17,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Posição defensiva: fácil de tomar, útil como fronteira.',desc:'Mundo gelado e remoto. Uma conquista inicial relativamente acessível.',links:['naboo','mandalore','kashyyyk']},
       {id:'kashyyyk',name:'Kashyyyk',x:69,y:36,owner:null,troops:2,tier:'MÉDIO',income:2,bonus:'Recursos naturais: gera créditos.',desc:'Mundo florestal com recursos naturais e acesso a rotas centrais.',links:['hoth','alderaan','bespin','dagobah']},
       {id:'bespin',name:'Bespin',x:84,y:41,owner:null,troops:2,tier:'BAIXO',income:2,bonus:'Extração de gás: aumenta a receita.',desc:'Uma plataforma econômica importante entre as regiões centrais e externas.',links:['kashyyyk','korriban','nalhutta','dagobah']},
       {id:'dagobah',name:'Dagobah',x:51,y:54,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Refúgio isolado: território de baixo custo.',desc:'Mundo pantanoso e isolado, adequado para uma expansão rápida.',links:['coruscant','kashyyyk','bespin','kamino']},
       {id:'kamino',name:'Kamino',x:56,y:68,owner:null,troops:2,tier:'MÉDIO',income:2,bonus:'Clonagem: gera créditos e facilita a expansão.',desc:'Planeta oceânico conhecido por tecnologia de clonagem e produção militar.',links:['dagobah','geonosis','mustafar','endor']},
       {id:'endor',name:'Endor',x:74,y:55,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Ponto de passagem: conecta frentes de batalha.',desc:'Florestas densas e posição valiosa para conectar campanhas regionais.',links:['kamino','mustafar','nalhutta']},
-      {id:'ryloth',name:'Ryloth',x:13,y:48,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Rotas comerciais regionais: gera créditos.',desc:'Mundo de fronteira que abre acesso a vários territórios do sul.',links:['mandalore','tatooine','geonosis']}
+      {id:'ryloth',name:'Ryloth',x:10,y:55,owner:null,troops:2,tier:'BAIXO',income:1,bonus:'Rotas comerciais regionais: gera créditos.',desc:'Mundo de fronteira que abre acesso a vários territórios do sul.',links:['mandalore','tatooine','geonosis']}
     ];
     let planets = [];
     let humanFaction = 'jedi';
@@ -565,7 +565,7 @@
     }
 
     function showHelp(){
-      alert('COMO JOGAR\\n\\n1. Escolha uma facção no início.\\n2. Clique em um planeta seu para defini-lo como origem.\\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\\n6. Encerrar turno permite que as duas facções rivais atuem.\\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\\n\\nControle 10 planetas para vencer. Esta é a primeira versão jogável; diplomacia, heróis, naves e campanhas avançadas ainda serão adicionados.');
+      alert('COMO JOGAR\n\n1. Escolha uma facção no início.\n2. Clique em um planeta seu para defini-lo como origem.\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\n6. Encerrar turno permite que as duas facções rivais atuem.\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\n\nControle 10 planetas para vencer. Esta é a primeira versão jogável; diplomacia, heróis, naves e campanhas avançadas ainda serão adicionados.');
     }
     function showToast(message){
       const el=$('toast');el.textContent=message;el.classList.add('show');
