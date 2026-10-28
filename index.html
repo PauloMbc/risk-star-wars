@@ -105,6 +105,11 @@
     @media(max-width:1120px){.layout{grid-template-columns:210px minmax(380px,1fr);}.right-panel{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;align-items:start}.right-panel .turn-card{grid-column:1/-1}.right-panel .intel,.right-panel .action-area{min-height:100%}.left-panel{gap:10px}.planet-node{width:100px}}
     @media(max-width:720px){.topbar{height:auto;min-height:66px;padding:12px 14px;gap:10px}.brand-mark{width:34px;height:34px}.brand-name{font-size:12px;letter-spacing:.1em}.brand-sub{font-size:8px;letter-spacing:.12em}.top-meta{gap:9px}.phase{display:none}.turn-chip{font-size:9px}.layout{display:flex;flex-direction:column;padding:10px;gap:10px}.left-panel{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:9px}.campaign-card{grid-column:1/-1}.campaign-name{font-size:16px}.campaign-copy{max-width:500px}.stat-grid{gap:6px}.stat{padding:9px}.stat-value{font-size:18px}.faction-summary{grid-column:1/-1}.faction-list{grid-template-columns:repeat(3,1fr);gap:5px}.faction-row{display:block;padding:8px}.faction-sigil{width:26px;height:26px;margin-bottom:7px}.faction-row .name{font-size:9px}.faction-row .desc{font-size:8px}.faction-row .count{display:none}.log-panel{grid-column:1/-1}.log-list{grid-template-columns:1fr 1fr;gap:8px}.log-item{font-size:9px}.map-panel{width:100%}.map-head{padding:13px}.map-heading{font-size:14px}.map-wrap{padding:7px}.galaxy-map{min-height:320px;aspect-ratio:1/1.05}.planet-node{width:clamp(62px,18vw,92px);min-height:42px;padding:5px;border-radius:8px}.planet-name{font-size:clamp(7px,2.1vw,9px)}.planet-tier{font-size:6px}.planet-bottom{margin-top:4px;font-size:7px}.troops{font-size:8px;padding:2px 4px}.owner-tag{font-size:6px}.map-caption{font-size:8px;flex-direction:column;gap:5px;padding:9px 3px}.right-panel{width:100%;display:grid;grid-template-columns:1fr;gap:9px}.right-panel .turn-card{grid-column:auto}.right-panel .intel,.right-panel .action-area{min-height:auto}.turn-card{padding:13px}.turn-faction{font-size:17px}.footer{padding:0 12px 16px;font-size:8px}.setup-card{padding:21px 15px}.faction-choice{gap:6px;margin:18px 0 13px}.choice{padding:10px 8px;min-height:165px}.choice-mark{font-size:20px}.choice-title{font-size:10px}.choice-role{font-size:8px;line-height:1.3}.choice-desc{font-size:9px}.setup-desc{font-size:11px}}
     @media(max-width:390px){.faction-list{grid-template-columns:1fr}.faction-row{display:flex}.faction-sigil{margin-bottom:0}.faction-row .count{display:block}.left-panel{grid-template-columns:1fr}.campaign-card,.faction-summary,.log-panel{grid-column:auto}.log-list{grid-template-columns:1fr}.choice-desc{font-size:8px}.choice{min-height:174px}}
+
+    .setup-card.setup-hub{max-width:980px;width:min(96vw,980px);max-height:94vh;overflow:auto;padding:clamp(18px,3vw,32px);background:radial-gradient(ellipse at 50% -15%,#24385b 0%,#101827 52%,#090e19 100%);border:1px solid #53627e;box-shadow:0 30px 100px #000c}
+    .hub-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left}.hub-kicker{font-size:10px;letter-spacing:3px;color:#f3c969;font-weight:900}.hub-title{font-size:clamp(26px,4vw,42px);font-weight:950;letter-spacing:-1px;margin:7px 0}.hub-title span{color:#f3c969}.hub-sub{color:#9eacc2;font-size:13px;line-height:1.5;max-width:610px}.hub-step{border:1px solid #455675;background:#121e31;border-radius:99px;padding:8px 12px;color:#c5d1e3;font-size:10px;white-space:nowrap}
+    .hub-factions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0 15px}.hub-factions .choice{min-height:120px;border-radius:13px;background:#111a2b;border-color:#34445f;text-align:left;padding:15px;transition:.18s}.hub-factions .choice.active{border-color:var(--choice-color);box-shadow:0 0 0 1px var(--choice-color),0 10px 30px #0005;background:linear-gradient(145deg,#1a2940,#111827)}.hub-factions .choice-mark{font-size:23px}.hub-factions .choice-title{font-size:14px}.hub-factions .choice-role{font-size:10px}.hub-factions .choice-desc{font-size:10px;line-height:1.4}.hub-section-label{font-size:10px;font-weight:900;letter-spacing:2px;color:#94a6c2;margin:18px 0 10px}.hub-roster{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.hub-person{border:1px solid #34445c;background:linear-gradient(145deg,#172338,#0f1726);color:#e9f0fb;border-radius:12px;padding:12px;text-align:left;min-height:128px;cursor:pointer}.hub-person.active{border-color:#f3c969;box-shadow:0 0 0 1px #f3c969,0 8px 24px #0005}.hub-person .person-icon{font-size:23px;margin-bottom:8px}.hub-person .person-name{font-weight:900;font-size:12px;line-height:1.3}.hub-person .person-role{font-size:9px;color:#f3c969;margin-top:5px}.hub-person .person-desc{font-size:10px;color:#9eacc2;line-height:1.4;margin-top:7px}.hub-loadout{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.hub-loadout-card{border:1px solid #34445c;border-radius:13px;padding:14px;background:#0c1422}.hub-loadout-title{font-size:11px;font-weight:900;letter-spacing:1px;color:#f3c969;margin-bottom:10px}.hub-stat{display:grid;grid-template-columns:76px 1fr 22px;align-items:center;gap:8px;margin:8px 0;font-size:10px;color:#b7c4d8}.hub-bar{height:6px;background:#253149;border-radius:99px;overflow:hidden}.hub-bar i{display:block;height:100%;background:linear-gradient(90deg,#5ad9e8,#f3c969);border-radius:99px}.hub-stat strong{text-align:right;color:#f5f7fb}.hub-summary{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-top:14px;border:1px solid #384964;border-radius:12px;background:#121c2c;color:#aebdd2;font-size:11px}.hub-summary b{color:#f3c969}.hub-start{margin-top:15px;width:100%;border-radius:10px;letter-spacing:1.6px;font-size:12px}.hub-foot{color:#71839f;font-size:10px;text-align:center;margin-top:10px}
+    @media(max-width:650px){.setup-card.setup-hub{width:96vw;max-height:94vh;padding:16px 12px}.hub-heading{align-items:flex-start}.hub-step{font-size:8px;padding:7px}.hub-sub{font-size:11px}.hub-factions{gap:6px}.hub-factions .choice{padding:9px;min-height:112px}.hub-factions .choice-desc{display:none}.hub-factions .choice-title{font-size:11px}.hub-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.hub-person{min-height:118px;padding:10px}.hub-loadout{grid-template-columns:1fr}.hub-stat{grid-template-columns:72px 1fr 20px}}
   </style>
 </head>
 <body>
@@ -213,14 +218,20 @@
   <footer class="footer"><span>RISK STAR WARS · PROTÓTIPO DE ESTRATÉGIA · V0.1</span><span>Partida local contra IA · progresso não salvo entre sessões</span></footer>
 
   <div class="overlay" id="setupOverlay">
-    <div class="setup-card">
-      <div class="setup-top"><div class="setup-symbol">✦</div><div class="setup-kicker">UMA GALÁXIA · TRÊS DESTINOS</div><div class="setup-title">Escolha seu <span>lado.</span></div><p class="setup-desc">Escolha sua facção e dispute o domínio galáctico contra as outras duas. Controle 10 planetas para vencer a primeira campanha.</p></div>
-      <div class="faction-choice" id="factionChoices"></div>
-      <button class="launch-btn" id="startBtn" type="button">INICIAR CAMPANHA</button>
-      <p class="setup-note">Campanha demonstrativa · batalhas simuladas com dados · decisões e resultado em tempo real</p>
+    <div class="setup-card setup-hub">
+      <div class="hub-heading"><div><div class="hub-kicker">RISK STAR WARS · COMANDO DE CAMPANHA</div><div class="hub-title">Monte seu <span>alto comando.</span></div><p class="hub-sub">Escolha sua facção, um campeão e um comandante antes de iniciar. A combinação define os atributos iniciais e a forma como sua força luta.</p></div><div class="hub-step">01 / 03 · PREPARAÇÃO</div></div>
+      <div class="hub-section-label">01 — ESCOLHA SUA FACÇÃO</div>
+      <div class="faction-choice hub-factions" id="factionChoices"></div>
+      <div class="hub-section-label">02 — SELECIONE SEU CAMPEÃO</div>
+      <div class="hub-roster" id="championChoices"></div>
+      <div class="hub-section-label">03 — ESCOLHA SEU COMANDANTE</div>
+      <div class="hub-roster" id="commanderChoices"></div>
+      <div class="hub-loadout"><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS DO CAMPEÃO</div><div id="championStats"></div></div><div class="hub-loadout-card"><div class="hub-loadout-title">DOUTRINA DO COMANDANTE</div><div id="commanderStats"></div></div></div>
+      <div class="hub-summary" id="loadoutSummary"></div>
+      <button class="launch-btn hub-start" id="startBtn" type="button">✦ CONFIRMAR ALTO COMANDO E INICIAR</button>
+      <div class="hub-foot">Sua seleção aplica bônus reais de combate e economia durante a campanha.</div>
     </div>
   </div>
-
   <div class="overlay hidden" id="resultOverlay">
     <div class="setup-card" style="max-width:540px">
       <div class="setup-top"><div class="setup-symbol">✦</div><div class="setup-kicker">FIM DE CAMPANHA</div><div class="result-head" id="resultTitle">Vitória</div><p class="result-copy" id="resultCopy"></p></div>
@@ -286,6 +297,9 @@
         {id:'maul_bounty',name:'Darth Maul',role:'Exceção do submundo',power:'agressao',desc:'Personagem excepcional disponível no deck dos caçadores.'}
       ]
     };
+    const commanderDecks = {"jedi":[{"id":"mace","name":"Mace Windu","role":"Mestre de batalha","power":"ataque","desc":"Liderança agressiva e disciplina de combate.","stats":{"attack":2,"defense":1,"economy":0,"mobility":0},"icon":"⚔"},{"id":"plo","name":"Plo Koon","role":"Comandante Jedi","power":"defesa","desc":"Protege posições e mantém as tropas firmes.","stats":{"attack":0,"defense":2,"economy":0,"mobility":1},"icon":"🛡"},{"id":"organa","name":"Bail Organa","role":"Líder da República","power":"economia","desc":"Organização e apoio logístico.","stats":{"attack":0,"defense":1,"economy":2,"mobility":0},"icon":"✦"}],"sith":[{"id":"sidious","name":"Darth Sidious","role":"Mestre Sith","power":"ataque","desc":"Amplifica a pressão ofensiva Sith.","stats":{"attack":2,"defense":0,"economy":1,"mobility":0},"icon":"⚡"},{"id":"tyrannus","name":"Darth Tyranus","role":"Estrategista","power":"defesa","desc":"Tática e controle de posições.","stats":{"attack":1,"defense":2,"economy":0,"mobility":0},"icon":"🗡"},{"id":"piett","name":"Almirante Piett","role":"Comando imperial","power":"mobilidade","desc":"Coordenação de frota e deslocamento.","stats":{"attack":0,"defense":1,"economy":0,"mobility":2},"icon":"🚀"}],"bounty":[{"id":"bo-katan","name":"Bo-Katan Kryze","role":"Comandante mandaloriana","power":"ataque","desc":"Ataque coordenado e força terrestre.","stats":{"attack":2,"defense":1,"economy":0,"mobility":0},"icon":"⚔"},{"id":"gideon","name":"Moff Gideon","role":"Comandante imperial","power":"defesa","desc":"Defesa organizada e controle militar.","stats":{"attack":1,"defense":2,"economy":0,"mobility":0},"icon":"🛡"},{"id":"hondo","name":"Hondo Ohnaka","role":"Chefe do submundo","power":"economia","desc":"Lucro, comércio e operações oportunistas.","stats":{"attack":0,"defense":0,"economy":2,"mobility":1},"icon":"💰"}]};
+    let selectedChampions = {jedi:'luke',sith:'vader',bounty:'jango'};
+    let selectedCommanders = {jedi:'mace',sith:'sidious',bounty:'bo-katan'};
     const heroes = {
       jedi:{name:"Cavaleiro Jedi",mark:"✧",ability:"Guardião: +1 na defesa; recupera 1 tropa no início do turno se estiver em planeta aliado."},
       sith:{name:"Lorde Sith",mark:"✹",ability:"Fúria: +1 adicional no ataque terrestre quando lidera a ofensiva."},
@@ -318,18 +332,36 @@
     }
 
     function renderChoices(){
-      $('factionChoices').innerHTML = factionIds.map(id=>{
-        const f=factions[id];
-        return '<button type="button" class="choice '+(id===selectedFaction?'active':'')+'" data-faction="'+id+'" style="--choice-color:'+f.color+'"><div class="choice-mark">'+f.mark+'</div><div class="choice-title">'+f.name+'</div><div class="choice-role">'+f.role+'</div><div class="choice-desc">'+f.desc+'</div></button>';
-      }).join('');
-      $('factionChoices').querySelectorAll('[data-faction]').forEach(btn=>btn.addEventListener('click',()=>{
-        selectedFaction=btn.dataset.faction;
-        renderChoices();
-      }));
+      $('factionChoices').innerHTML=factionIds.map(id=>{const f=factions[id];return '<button type="button" class="choice '+(id===selectedFaction?'active':'')+'" data-faction="'+id+'" style="--choice-color:'+f.color+'"><div class="choice-mark">'+f.mark+'</div><div class="choice-title">'+f.name+'</div><div class="choice-role">'+f.role+'</div><div class="choice-desc">'+f.desc+'</div></button>';}).join('');
+      $('factionChoices').querySelectorAll('[data-faction]').forEach(btn=>btn.addEventListener('click',()=>{selectedFaction=btn.dataset.faction;renderChoices();}));
+      const champions=characterDecks[selectedFaction],commanders=commanderDecks[selectedFaction];
+      if(!champions.some(c=>c.id===selectedChampions[selectedFaction]))selectedChampions[selectedFaction]=champions[0].id;
+      if(!commanders.some(c=>c.id===selectedCommanders[selectedFaction]))selectedCommanders[selectedFaction]=commanders[0].id;
+      $('championChoices').innerHTML=champions.map(c=>'<button type="button" class="hub-person '+(selectedChampions[selectedFaction]===c.id?'active':'')+'" data-champion="'+c.id+'"><div class="person-icon">✦</div><div class="person-name">'+c.name+'</div><div class="person-role">'+c.role+'</div><div class="person-desc">'+c.desc+'</div></button>').join('');
+      $('commanderChoices').innerHTML=commanders.map(c=>'<button type="button" class="hub-person '+(selectedCommanders[selectedFaction]===c.id?'active':'')+'" data-commander="'+c.id+'"><div class="person-icon">'+c.icon+'</div><div class="person-name">'+c.name+'</div><div class="person-role">'+c.role+'</div><div class="person-desc">'+c.desc+'</div></button>').join('');
+      $('championChoices').querySelectorAll('[data-champion]').forEach(b=>b.addEventListener('click',()=>{selectedChampions[selectedFaction]=b.dataset.champion;renderChoices();}));
+      $('commanderChoices').querySelectorAll('[data-commander]').forEach(b=>b.addEventListener('click',()=>{selectedCommanders[selectedFaction]=b.dataset.commander;renderChoices();}));
+      const ch=champions.find(c=>c.id===selectedChampions[selectedFaction]),co=commanders.find(c=>c.id===selectedCommanders[selectedFaction]);
+      const base={attack:3,defense:3,economy:2,mobility:2};
+      const champBonuses={luke:{attack:1,defense:2,economy:0,mobility:0},obiwan:{attack:0,defense:3,economy:0,mobility:0},yoda:{attack:1,defense:2,economy:0,mobility:1},vader:{attack:3,defense:1,economy:0,mobility:0},maul:{attack:2,defense:0,economy:0,mobility:2},kraytora:{attack:2,defense:2,economy:0,mobility:0},jango:{attack:2,defense:1,economy:1,mobility:1},cadbane:{attack:2,defense:0,economy:2,mobility:1},previzsla:{attack:2,defense:2,economy:0,mobility:0},aurasing:{attack:3,defense:0,economy:1,mobility:1},maul_bounty:{attack:2,defense:1,economy:0,mobility:2}};
+      const cs=champBonuses[ch.id]||{attack:1,defense:1,economy:0,mobility:0},stats={attack:Math.min(5,base.attack+cs.attack),defense:Math.min(5,base.defense+cs.defense),economy:Math.min(5,base.economy+cs.economy),mobility:Math.min(5,base.mobility+cs.mobility)};
+      $('championStats').innerHTML=statMarkup(stats);
+      $('commanderStats').innerHTML=statMarkup({attack:Math.min(5,base.attack+co.stats.attack),defense:Math.min(5,base.defense+co.stats.defense),economy:Math.min(5,base.economy+co.stats.economy),mobility:Math.min(5,base.mobility+co.stats.mobility)});
+      $('loadoutSummary').innerHTML='<span>FACÇÃO <b>'+factions[selectedFaction].name+'</b></span><span>CAMPEÃO <b>'+ch.name+'</b></span><span>COMANDANTE <b>'+co.name+'</b></span>';
     }
-
+    function statMarkup(s){return [['Ataque',s.attack],['Defesa',s.defense],['Economia',s.economy],['Mobilidade',s.mobility]].map(([label,val])=>'<div class="hub-stat"><span>'+label+'</span><span class="hub-bar"><i style="width:'+(val*20)+'%"></i></span><strong>'+val+'</strong></div>').join('');}
+    function applyLoadoutStats(){
+      const co=commanderDecks[humanFaction].find(c=>c.id===selectedCommanders[humanFaction]);
+      if(!co)return;
+      credits[humanFaction]+=co.stats.economy;
+      if(co.stats.defense>0){const cap=planet(capitalId(humanFaction));if(cap)cap.troops+=Math.floor(co.stats.defense/2);}
+      if(co.stats.attack>0){const cap=planet(capitalId(humanFaction));if(cap)cap.troops+=Math.floor(co.stats.attack/2);}
+      fleet[humanFaction]+=Math.floor(co.stats.mobility/2);
+    }
     function startCampaign(){
       humanFaction=selectedFaction;
+      selectedHeroes[humanFaction]=selectedChampions[humanFaction];
+      applyLoadoutStats();
       planets=initialPlanets.map(p=>({...p}));
       currentFaction=humanFaction; round=1; reinforcements=0;
       credits={jedi:factions.jedi.credits,sith:factions.sith.credits,bounty:factions.bounty.credits};
@@ -576,8 +608,10 @@
       const attackerCount=Math.min(3,source.troops-1);
       const defenderCount=Math.min(2,target.troops);
       if(attackerCount<1||defenderCount<1)return {ok:false,captured:false};
-      const attackMod=(attackerFaction==='sith'?1:0)+(attackerFaction==='sith'&&heroLocations.sith===source.id?1:0)+(attackerFaction==='sith'&&selectedHeroes.sith==='maul'?1:0);
-      const defendMod=(target.owner==='jedi'?1:0)+(target.owner==='jedi'&&heroLocations.jedi===target.id?1:0)+(target.owner==='jedi'&&selectedHeroes.jedi==='obiwan'?1:0);
+      const commander=commanderDecks[attackerFaction].find(c=>c.id===selectedCommanders[attackerFaction]);
+      const attackMod=(attackerFaction==='sith'?1:0)+(attackerFaction==='sith'&&heroLocations.sith===source.id?1:0)+(attackerFaction==='sith'&&selectedHeroes.sith==='maul'?1:0)+(commander&&commander.stats.attack>=2?1:0);
+      const defenderCommander=commanderDecks[target.owner].find(c=>c.id===selectedCommanders[target.owner]);
+      const defendMod=(target.owner==='jedi'?1:0)+(target.owner==='jedi'&&heroLocations.jedi===target.id?1:0)+(target.owner==='jedi'&&selectedHeroes.jedi==='obiwan'?1:0)+(defenderCommander&&defenderCommander.stats.defense>=2?1:0);
       const attackDice=rollDice(attackerCount,attackMod);
       const defendDice=rollDice(defenderCount,defendMod);
       let attackerLoss=0,defenderLoss=0;
