@@ -490,22 +490,20 @@
     function activeEraFaction(){return activeEra().factions.find(f=>f.id===selectedFaction)||activeEra().factions[0];}
     function showSetupStage(stage){
       setupStage=stage;
-      ['eraStage','factionStage','rosterStage'].forEach(id=>$(id).classList.add('hidden'));
-      $(stage==='era'?'eraStage':stage==='faction'?'factionStage':'rosterStage').classList.remove('hidden');
-      $('setupStepLabel').textContent=stage==='era'?'01 / 04 · ERA':stage==='faction'?'02 / 04 · FACÇÃO':'03–04 / 04 · ALTO COMANDO';
+      $('setupStepLabel').textContent=stage==='era'?'01 · ERA':stage==='faction'?'02 · FACÇÃO':'03–04 · ALTO COMANDO';
       $('setupOverlay').scrollTop=0;
       if(stage==='faction')renderFactionChoices();
       if(stage==='roster')renderRosterChoices();
     }
     function renderChoices(){
       $('eraChoices').innerHTML=Object.entries(eraConfigs).map(([id,e])=>'<button type="button" class="choice '+(id===selectedEra?'active':'')+'" data-era="'+id+'" style="--choice-color:#f3c969"><div class="choice-mark">✦</div><div class="choice-title">'+e.name+'</div><div class="choice-role">ERA GALÁCTICA</div><div class="choice-desc">'+e.subtitle+'</div></button>').join('');
-      $('eraChoices').querySelectorAll('[data-era]').forEach(b=>b.addEventListener('click',()=>{selectedEra=b.dataset.era;selectedFaction=activeEra().factions[0].id;showSetupStage('faction');}));
+      $('eraChoices').querySelectorAll('[data-era]').forEach(b=>b.addEventListener('click',()=>{selectedEra=b.dataset.era;selectedFaction=activeEra().factions[0].id;renderChoices();renderFactionChoices();renderRosterChoices();showSetupStage('faction');}));
       showSetupStage('era');
     }
     function renderFactionChoices(){
       const era=activeEra();
       $('factionChoices').innerHTML=era.factions.map(f=>{const base=factions[f.id];return '<button type="button" class="choice '+(f.id===selectedFaction?'active':'')+'" data-faction="'+f.id+'" style="--choice-color:'+base.color+'"><div class="choice-mark">'+base.mark+'</div><div class="choice-title">'+f.label+'</div><div class="choice-role">'+f.source.toUpperCase()+'</div><div class="choice-desc">'+(f.id==='jedi'?'Liderança, defesa e resistência.':f.id==='sith'?'Pressão militar e domínio ofensivo.':'Contratos, dinheiro e operações especiais.')+'</div></button>';}).join('');
-      $('factionChoices').querySelectorAll('[data-faction]').forEach(b=>b.addEventListener('click',()=>{selectedFaction=b.dataset.faction;showSetupStage('roster');}));
+      $('factionChoices').querySelectorAll('[data-faction]').forEach(b=>b.addEventListener('click',()=>{selectedFaction=b.dataset.faction;renderFactionChoices();showSetupStage('roster');}));
     }
     function hubPortrait(name){
       const portraits={
@@ -538,8 +536,8 @@
       selectedByEra[key]=saved;
       selectedChampions[selectedFaction]=saved.champion;
       selectedCommanders[selectedFaction]=saved.commander;
-      $('championChoices').innerHTML=champions.map(x=>'<button type="button" class="hub-person '+(saved.champion===x.id?'active':'')+'" data-champion="'+x.id+'"><div class="person-icon">✦</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
-      $('commanderChoices').innerHTML=commanders.map(x=>'<button type="button" class="hub-person '+(saved.commander===x.id?'active':'')+'" data-commander="'+x.id+'"><div class="person-icon">'+x.icon+'</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
+      $('championChoices').innerHTML=champions.map(x=>'<button type="button" class="hub-person '+(saved.champion===x.id?'active':'')+'" data-champion="'+x.id+'"><img class="person-art" src="'+hubPortrait(x.name)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="person-icon">✦</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
+      $('commanderChoices').innerHTML=commanders.map(x=>'<button type="button" class="hub-person '+(saved.commander===x.id?'active':'')+'" data-commander="'+x.id+'"><img class="person-art" src="'+hubPortrait(x.name)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="person-icon">'+x.icon+'</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
       $('championChoices').querySelectorAll('[data-champion]').forEach(b=>b.addEventListener('click',()=>{saved.champion=b.dataset.champion;selectedByEra[key]=saved;renderRosterChoices();}));
       $('commanderChoices').querySelectorAll('[data-commander]').forEach(b=>b.addEventListener('click',()=>{saved.commander=b.dataset.commander;selectedByEra[key]=saved;renderRosterChoices();}));
       const base={attack:3,defense:3,economy:2,mobility:2};
