@@ -419,6 +419,9 @@
       credits={jedi:factions.jedi.credits,sith:factions.sith.credits,bounty:factions.bounty.credits};
       heroLocations={jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
       selectedHeroes={jedi:"luke",sith:"vader",bounty:"jango"};
+      if(!characterDecks[humanFaction].some(ch=>ch.id===chosenChampion[0])){
+        characterDecks[humanFaction].push({id:chosenChampion[0],name:chosenChampion[1],role:'Champion · '+cfg.label,power:'era',desc:'Champion selecionado para a era '+activeEra().name+'.'});
+      }
       selectedHeroes[humanFaction]=chosenChampion[0];
       fleet={jedi:1,sith:1,bounty:1};
       const coIndex=cfg.commanders.findIndex(x=>x[0]===chosenCommander[0]);
