@@ -248,6 +248,14 @@
     @media(max-width:999px){.hub-commanders .hub-person{min-height:100px;grid-template-columns:55px minmax(0,1fr)}.commander-mini-row{grid-template-columns:42px minmax(0,1fr) 11px}}
     @media(max-width:640px){.hub-commanders .hub-person{min-height:96px}.commander-mini-row{font-size:6px;grid-template-columns:45px minmax(0,1fr) 11px}}
 
+
+    .hub-network{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;filter:drop-shadow(0 0 4px #3ac3ff22)}
+    .hub-node,.hub-capital,.hub-map-notes{z-index:2}
+    .hub-panel-title{position:relative}
+    .hub-era-panel .hub-panel-title:after,.hub-faction-panel .hub-panel-title:after,.hub-character-panel .hub-panel-title:after{content:"⟶";position:absolute;right:-9px;top:50%;transform:translate(50%,-50%);z-index:5;color:#9fdfff;font-size:clamp(18px,2vw,28px);font-weight:400;text-shadow:0 0 8px #70cfff}
+    .hub-galaxy-globe{background-color:transparent;background-image:repeating-linear-gradient(24deg,transparent 0 8px,#c3d5a11b 9px 10px),radial-gradient(ellipse at 40% 34%,#7c9c73 0 13%,transparent 14%),radial-gradient(ellipse at 62% 54%,#8a986d 0 9%,transparent 10%),radial-gradient(ellipse at 28% 70%,#547e77 0 13%,transparent 14%),radial-gradient(ellipse at 72% 28%,#637f75 0 11%,transparent 12%)}
+    @media(max-width:999px){.hub-era-panel .hub-panel-title:after,.hub-faction-panel .hub-panel-title:after,.hub-character-panel .hub-panel-title:after{display:none}}
+
   </style>
 </head>
 <body>
@@ -391,9 +399,32 @@
           <div class="hub-map-title">PREPARE-SE PARA A CONQUISTA DA GALÁXIA</div>
           <div class="hub-galaxy-scene"><div class="hub-galaxy-globe"></div>
             <div class="hub-orbit o1"></div><div class="hub-orbit o2"></div>
+            <svg class="hub-network" viewBox="0 0 700 360" preserveAspectRatio="none" aria-hidden="true">
+              <g fill="none" stroke="#85c7e5" stroke-width="1.25" opacity=".56">
+                <path d="M180 138 L245 96 L315 132 L380 92 L445 122 L510 82 L575 130"/>
+                <path d="M165 190 L240 165 L305 195 L380 170 L455 190 L525 160 L600 190"/>
+                <path d="M190 245 L255 215 L320 246 L385 225 L450 255 L520 224 L580 260"/>
+                <path d="M245 96 L240 165 L255 215 L270 279 M315 132 L305 195 L320 246 L345 300"/>
+                <path d="M380 92 L380 170 L385 225 L385 292 M445 122 L455 190 L450 255 L475 295"/>
+                <path d="M510 82 L525 160 L520 224 L555 270 M575 130 L600 190 L580 260"/>
+                <path d="M245 96 L305 195 L255 215 L315 132 L455 190 L380 170 L445 122 L520 224 L450 255 L380 225 L305 195"/>
+                <path d="M190 245 L305 195 L380 170 L525 160 L575 130 M240 165 L380 92 L455 190 L580 260"/>
+                <path d="M220 280 L320 246 L450 255 L555 270 M270 279 L385 292 L475 295"/>
+              </g>
+              <g fill="#b9e9fa" stroke="#1b6c8d" stroke-width="2">
+                <circle cx="180" cy="138" r="5"/><circle cx="245" cy="96" r="4"/><circle cx="315" cy="132" r="6"/><circle cx="380" cy="92" r="4"/><circle cx="445" cy="122" r="6"/><circle cx="510" cy="82" r="4"/><circle cx="575" cy="130" r="5"/>
+                <circle cx="165" cy="190" r="4"/><circle cx="240" cy="165" r="5"/><circle cx="305" cy="195" r="7"/><circle cx="380" cy="170" r="5"/><circle cx="455" cy="190" r="7"/><circle cx="525" cy="160" r="5"/><circle cx="600" cy="190" r="4"/>
+                <circle cx="190" cy="245" r="5"/><circle cx="255" cy="215" r="4"/><circle cx="320" cy="246" r="6"/><circle cx="385" cy="225" r="5"/><circle cx="450" cy="255" r="7"/><circle cx="520" cy="224" r="5"/><circle cx="580" cy="260" r="5"/>
+                <circle cx="270" cy="279" r="4"/><circle cx="345" cy="300" r="4"/><circle cx="385" cy="292" r="4"/><circle cx="475" cy="295" r="4"/><circle cx="555" cy="270" r="4"/>
+              </g>
+              <g fill="#aebdc6" stroke="#dbe9ee" stroke-width="1.3" opacity=".82">
+                <path d="M62 67 L132 47 L176 61 L118 68 L82 82 Z"/><path d="M82 82 L118 68 L110 75 L90 86 Z" fill="#6b8291"/>
+                <path d="M515 308 L578 289 L626 301 L568 310 L541 322 Z"/><path d="M541 322 L568 310 L560 318 L545 325 Z" fill="#6b8291"/>
+                <path d="M600 53 L644 38 L678 49 L636 57 L617 66 Z"/>
+              </g>
+            </svg>
             <span class="hub-node n1">✦</span><span class="hub-node n2">◈</span><span class="hub-node n3">✦</span><span class="hub-node n4">◉</span><span class="hub-node n5">✦</span><span class="hub-node n6">◈</span><span class="hub-node n7">✦</span><span class="hub-node n8">◉</span><span class="hub-capital">CORUSCANT<br><small>CAPITAL</small></span>
             <div class="hub-map-notes"><span>✧ Expanda seus territórios</span><span>✧ Comande heróis e exércitos</span><span>✧ Construa sua frota</span><span>✧ Domine a galáxia</span></div>
-            <div class="hub-ship ship-a">◢━━━━━━━━</div><div class="hub-ship ship-b">━━━━━━◣</div>
           </div>
         </section>
       </div>
