@@ -364,6 +364,16 @@
         <div class="target-box" id="targetBox"><div class="label">ALVO DO ATAQUE</div><strong id="targetName">Nenhum alvo definido</strong><p id="targetHelp">Selecione um planeta seu e depois um planeta adjacente para preparar a ofensiva.</p></div>
         <p class="hint" id="actionHint">Os reforços são calculados no início de cada turno. Planetas com mais tropas defendem melhor.</p>
       </section>
+      <section class="panel action-area" id="phaseThreePanel">
+        <div class="eyebrow">Fase 3 · Contratos e espionagem</div>
+        <div class="panel-title" style="margin:6px 0 12px">Operações secretas</div>
+        <p class="hint" id="contractStatus">Aceite um contrato para ganhar créditos ao conquistar o planeta-alvo.</p>
+        <div class="action-stack">
+          <button class="primary-btn" id="contractBtn" type="button" disabled>🎯 Aceitar contrato · 2 créditos</button>
+          <button class="secondary-btn" id="espionageBtn" type="button" disabled>🛰 Espionar alvo · 3 créditos</button>
+        </div>
+        <div class="target-box" style="margin-top:10px"><div class="label">INTELIGÊNCIA SECRETA</div><strong id="espionageName">Nenhuma informação coletada</strong><p id="espionageReport">Selecione um planeta inimigo e use a espionagem para revelar tropas e preparar a ofensiva.</p></div>
+      </section>
     </aside>
   </main>
 
@@ -515,6 +525,9 @@
     let heroLocations = {jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
     let selectedHeroes = {jedi:"luke",sith:"vader",bounty:"jango"};
     let fleet = {jedi:1,sith:1,bounty:1};
+    let activeContract = null;
+    let espionageReports = {};
+    let sabotagedPlanet = null;
     let toastTimer = null;
     const $ = id => document.getElementById(id);
     const factionIds = ['jedi','sith','bounty'];
@@ -537,6 +550,8 @@
       $('moveHeroBtn').addEventListener('click',moveHero);
       $('buyShipBtn').addEventListener('click',buyShip);
       $('spaceAttackBtn').addEventListener('click',spaceAttack);
+      $('contractBtn').addEventListener('click',acceptContract);
+      $('espionageBtn').addEventListener('click',performEspionage);
       $('shipType').addEventListener('change',renderPhaseTwo);
       $('heroCharacter').addEventListener('change',selectHeroCharacter);
       render();
@@ -728,6 +743,7 @@
       else characterDecks[humanFaction][existingChampion]={...characterDecks[humanFaction][existingChampion],...championEntry};
       selectedHeroes[humanFaction]=chosenChampion[0];
       fleet={jedi:1,sith:1,bounty:1};
+      activeContract=null;espionageReports={};sabotagedPlanet=null;
       const coIndex=cfg.commanders.findIndex(x=>x[0]===chosenCommander[0]);
       const bonus=commanderBonus(chosenCommander[1],Math.max(0,coIndex));
       selectedCommanders[humanFaction]=chosenCommander[0];
@@ -840,6 +856,7 @@
       }).join('');
       renderIntel();
       renderPhaseTwo();
+      renderPhaseThree();
       const selected=planet(selectedPlanetId);
       const target=planet(targetPlanetId);
       const sourceOk=started&&!gameOver&&currentFaction===humanFaction&&selected&&selected.owner===humanFaction;
@@ -920,6 +937,52 @@
       }
       return false;
     }
+    function renderPhaseThree(){
+      const target=planet(targetPlanetId);
+      const validEnemy=started&&!gameOver&&currentFaction===humanFaction&&target&&target.owner&&target.owner!==humanFaction;
+      $('contractBtn').disabled=!(validEnemy&&!activeContract&&credits[humanFaction]>=2);
+      $('espionageBtn').disabled=!(validEnemy&&credits[humanFaction]>=3&&espionageReports[target.id]?.round!==round);
+      $('contractBtn').textContent=activeContract?'🎯 Contrato ativo · '+(planet(activeContract.target)?.name||'alvo'):'🎯 Aceitar contrato · 2 créditos';
+      $('espionageBtn').textContent='🛰 Espionar alvo · 3 créditos';
+      if(activeContract){
+        const p=planet(activeContract.target);
+        $('contractStatus').textContent='Contrato ativo: conquistar '+(p?p.name:'alvo')+' para receber '+activeContract.reward+' créditos.';
+      }else{
+        $('contractStatus').textContent=humanFaction==='bounty'?'Caçadores: contrato custa 2 créditos e paga 6 ao conquistar o alvo.':'Contrato custa 2 créditos e paga 4 ao conquistar o planeta inimigo selecionado.';
+      }
+      const report=target&&espionageReports[target.id];
+      if(report&&report.round===round){
+        $('espionageName').textContent='Relatório: '+report.name;
+        $('espionageReport').textContent='Tropas observadas: '+report.troops+'. '+report.note;
+      }else{
+        $('espionageName').textContent='Nenhuma informação coletada';
+        $('espionageReport').textContent='Selecione um planeta inimigo e use a espionagem para revelar tropas e preparar a ofensiva.';
+      }
+      if(!started||gameOver||currentFaction!==humanFaction){
+        $('contractBtn').disabled=true;$('espionageBtn').disabled=true;
+      }
+    }
+    function acceptContract(){
+      const target=planet(targetPlanetId);
+      if(!started||gameOver||currentFaction!==humanFaction||!target||!target.owner||target.owner===humanFaction||activeContract||credits[humanFaction]<2)return;
+      credits[humanFaction]-=2;
+      activeContract={target:target.id,reward:humanFaction==='bounty'?6:4};
+      addLog('🎯','Contrato aceito','Alvo: '+target.name+'. Recompensa: '+activeContract.reward+' créditos ao conquistar.');
+      showToast('Contrato aceito: conquiste '+target.name+'.');
+      render();
+    }
+    function performEspionage(){
+      const target=planet(targetPlanetId);
+      if(!started||gameOver||currentFaction!==humanFaction||!target||!target.owner||target.owner===humanFaction||credits[humanFaction]<3||espionageReports[target.id]?.round===round)return;
+      credits[humanFaction]-=3;
+      const bountyBonus=humanFaction==='bounty'?1:0;
+      espionageReports[target.id]={name:target.name,troops:target.troops,note:'Informação obtida na rodada '+round+'.',round};
+      sabotagedPlanet=target;
+      addLog('🛰','Espionagem concluída',target.name+': '+target.troops+' tropas detectadas. A próxima fase de reforços inimiga será reduzida em '+(2+bountyBonus)+'.');
+      if(bountyBonus) sabotagedPlanet._sabotagePower=3;
+      showToast('Relatório obtido: '+target.troops+' tropas detectadas.');
+      render();
+    }
     function renderPhaseTwo(){
       const loc=planet(heroLocations[humanFaction]);
       const deck=characterDecks[humanFaction];
@@ -966,7 +1029,7 @@
       fleet[humanFaction]--;credits[humanFaction]--;
       const damage=1+Math.floor(Math.random()*2);tgt.troops=Math.max(0,tgt.troops-damage);
       addLog('☄','Bombardeio orbital',src.name+' atingiu '+tgt.name+' e eliminou '+damage+' tropa(s).');
-      if(tgt.troops===0){const old=tgt.owner;tgt.owner=humanFaction;tgt.troops=1;credits[humanFaction]+=humanFaction==='bounty'?3:1;addLog('⚔','Planeta conquistado após bombardeio',tgt.name+' foi ocupado'+(old?' após expulsar '+factions[old].name:'')+'.');targetPlanetId=null;checkVictory();}
+      if(tgt.troops===0){const old=tgt.owner;tgt.owner=humanFaction;tgt.troops=1;credits[humanFaction]+=humanFaction==='bounty'?3:1;addLog('⚔','Planeta conquistado após bombardeio',tgt.name+' foi ocupado'+(old?' após expulsar '+factions[old].name:'')+'.');if(activeContract&&activeContract.target===tgt.id){credits[humanFaction]+=activeContract.reward;addLog('🎯','Contrato concluído',tgt.name+' conquistado por bombardeio. Recompensa: '+activeContract.reward+' créditos.');activeContract=null;}targetPlanetId=null;checkVictory();}
       render();showToast('Bombardeio concluído. Uma nave foi consumida.');
     }
 
@@ -1007,6 +1070,12 @@
         target.owner=attackerFaction;target.troops=moved;
         if(attackerFaction==='bounty')credits.bounty+=4;
         if(attackerFaction==='bounty'&&selectedHeroes.bounty==='cadbane')credits.bounty+=2;
+        if(attackerFaction===humanFaction&&activeContract&&activeContract.target===target.id){
+          credits[humanFaction]+=activeContract.reward;
+          addLog('🎯','Contrato concluído',target.name+' conquistado. Recompensa: '+activeContract.reward+' créditos.');
+          activeContract=null;
+          showToast('Contrato concluído! Créditos recebidos.');
+        }
         if(record)addLog('⚔','Planeta conquistado',factions[attackerFaction].name+' tomou '+target.name+(oldOwner?' de '+factions[oldOwner].name:'')+'.');
       }else if(record){
         addLog('⚔','Combate em '+target.name,'Ataque '+attackDice.join(',')+' · Defesa '+defendDice.join(',')+'. Perdas: '+attackerLoss+' sua(s), '+defenderLoss+' inimiga(s).');
@@ -1046,6 +1115,7 @@
       const held=ownedPlanets(factionId);
       if(!held.length){addLog('◎','Facção eliminada',factions[factionId].name+' perdeu todos os planetas.');return;}
       let pool=calcReinforcements(factionId);
+      if(sabotagedPlanet&&sabotagedPlanet.owner===factionId){const sabotagePower=sabotagedPlanet._sabotagePower||2;pool=Math.max(0,pool-sabotagePower);addLog('🛰','Sabotagem bem-sucedida',sabotagedPlanet.name+' perdeu '+sabotagePower+' reforço(s) por interferência inimiga.');sabotagedPlanet=null;}
       credits[factionId]+=held.reduce((sum,p)=>sum+p.income,0);
       const frontiers=held.filter(p=>p.links.some(id=>planet(id)&&planet(id).owner!==factionId));
       frontiers.sort((a,b)=>b.troops-a.troops);
@@ -1094,7 +1164,7 @@
     }
 
     function showHelp(){
-      alert('COMO JOGAR\n\n1. Escolha uma facção no início.\n2. Clique em um planeta seu para defini-lo como origem.\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\n6. Encerrar turno permite que as duas facções rivais atuem.\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\n8. Na Fase 2, transporte o campeão a planetas aliados com lançadeiras ou cruzadores, compre naves e use bombardeio orbital em alvos conectados.\n\nControle 10 planetas para vencer.');
+      alert('COMO JOGAR\n\n1. Escolha uma facção no início.\n2. Clique em um planeta seu para defini-lo como origem.\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\n6. Encerrar turno permite que as duas facções rivais atuem.\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\n8. Na Fase 2, transporte o campeão a planetas aliados com lançadeiras ou cruzadores, compre naves e use bombardeio orbital em alvos conectados.\n9. Na Fase 3, selecione um planeta inimigo como alvo: aceite um contrato para receber créditos ao conquistá-lo ou espione-o para revelar tropas e sabotar os próximos reforços.\n\nControle 10 planetas para vencer.');
     }
     function showToast(message){
       const el=$('toast');el.textContent=message;el.classList.add('show');
