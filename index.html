@@ -177,7 +177,10 @@
       <section class="panel action-area" id="heroPanel">
         <div class="eyebrow">Fase 2 · Heróis e frota</div>
         <div class="panel-title" style="margin:6px 0 12px">Comando especial</div>
-        <div class="intel-desc" id="heroStatus">Escolha uma facção para mobilizar seu campeão.</div>
+        <div class="intel-desc" id="heroStatus">Escolha um personagem para liderar sua facção.</div>
+        <label class="section-label" for="heroCharacter" style="display:block;margin-top:12px">Deck de personagens da facção</label>
+        <select id="heroCharacter" style="width:100%;padding:10px;background:#0b1220;color:#e9f0fb;border:1px solid #34425b;border-radius:8px;margin-bottom:8px"></select>
+        <div class="hint" id="characterDescription">Personagens da sua facção.</div>
         <label class="section-label" for="heroDestination" style="display:block;margin-top:12px">Destino do campeão</label>
         <select id="heroDestination" style="width:100%;padding:10px;background:#0b1220;color:#e9f0fb;border:1px solid #34425b;border-radius:8px;margin-bottom:8px"></select>
         <label class="section-label" for="shipType" style="display:block;margin-top:8px">Transporte</label>
@@ -264,12 +267,32 @@
     let started = false;
     let gameOver = false;
     let logs = [];
+    const characterDecks = {
+      jedi:[
+        {id:'luke',name:'Luke Skywalker',role:'Campeão Jedi',power:'equilíbrio',desc:'Defesa e controle; fortalece a resistência das tropas.'},
+        {id:'obiwan',name:'Obi-Wan Kenobi',role:'Mestre Jedi',power:'defesa',desc:'Especialista em defesa e proteção de posições.'},
+        {id:'yoda',name:'Yoda',role:'Grande Mestre',power:'cura',desc:'Recupera tropas aliadas quando está em planeta controlado.'}
+      ],
+      sith:[
+        {id:'vader',name:'Darth Vader',role:'Campeão Sith',power:'dano',desc:'Amplifica ataques e pressiona defesas inimigas.'},
+        {id:'maul',name:'Darth Maul',role:'Lorde Sith',power:'agressao',desc:'Especialista em ofensiva e conquista.'},
+        {id:'kraytora',name:'Darth Kraytora',role:'Vilão original',power:'medo',desc:'Representa a instabilidade e o poder sombrio Sith.'}
+      ],
+      bounty:[
+        {id:'jango',name:'Jango Fett',role:'Campeão caçador',power:'contratos',desc:'Caçador profissional, versátil e preparado para missões.'},
+        {id:'cadbane',name:'Cad Bane',role:'Caçador lendário',power:'submundo',desc:'Conexões no submundo e nas rotas de especiarias.'},
+        {id:'previzsla',name:'Pre Vizsla',role:'Comandante mandaloriano',power:'tropas',desc:'Comanda guerreiros e fortalece operações terrestres.'},
+        {id:'aurasing',name:'Aurra Sing',role:'Atiradora',power:'precisao',desc:'Especialista em eliminar alvos de alto valor.'},
+        {id:'maul_bounty',name:'Darth Maul',role:'Exceção do submundo',power:'agressao',desc:'Personagem excepcional disponível no deck dos caçadores.'}
+      ]
+    };
     const heroes = {
       jedi:{name:"Cavaleiro Jedi",mark:"✧",ability:"Guardião: +1 na defesa; recupera 1 tropa no início do turno se estiver em planeta aliado."},
       sith:{name:"Lorde Sith",mark:"✹",ability:"Fúria: +1 adicional no ataque terrestre quando lidera a ofensiva."},
       bounty:{name:"Caçador lendário",mark:"✦",ability:"Especialista: recebe +2 créditos extras ao conquistar um planeta."}
     };
     let heroLocations = {jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
+    let selectedHeroes = {jedi:"luke",sith:"vader",bounty:"jango"};
     let fleet = {jedi:1,sith:1,bounty:1};
     let toastTimer = null;
     const $ = id => document.getElementById(id);
@@ -290,6 +313,7 @@
       $('buyShipBtn').addEventListener('click',buyShip);
       $('spaceAttackBtn').addEventListener('click',spaceAttack);
       $('shipType').addEventListener('change',renderPhaseTwo);
+      $('heroCharacter').addEventListener('change',selectHeroCharacter);
       render();
     }
 
@@ -310,6 +334,7 @@
       currentFaction=humanFaction; round=1; reinforcements=0;
       credits={jedi:factions.jedi.credits,sith:factions.sith.credits,bounty:factions.bounty.credits};
       heroLocations={jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
+      selectedHeroes={jedi:"luke",sith:"vader",bounty:"jango"};
       fleet={jedi:1,sith:1,bounty:1};
       selectedPlanetId=capitalId(humanFaction); targetPlanetId=null; mercenaryUsed=false; started=true; gameOver=false; logs=[];
       $('setupOverlay').classList.add('hidden');
@@ -461,6 +486,7 @@
       mercenaryUsed=false;
       credits[humanFaction]+=ownedPlanets(humanFaction).reduce((sum,p)=>sum+p.income,0);
       if(humanFaction==="jedi"&&planet(heroLocations.jedi)?.owner==="jedi")planet(heroLocations.jedi).troops+=1;
+      if(humanFaction==="jedi"&&selectedHeroes.jedi==="yoda"&&planet(heroLocations.jedi)?.owner==="jedi")planet(heroLocations.jedi).troops+=1;
       addLog('◈','Rodada '+round,'Reforços disponíveis: '+reinforcements+'. Créditos arrecadados nos planetas controlados.');
       render();
     }
@@ -493,12 +519,19 @@
     }
     function renderPhaseTwo(){
       const loc=planet(heroLocations[humanFaction]);
+      const deck=characterDecks[humanFaction];
+      const characterSelect=$('heroCharacter');
+      const priorCharacter=selectedHeroes[humanFaction];
+      characterSelect.innerHTML=deck.map(c=>'<option value="'+c.id+'">'+c.name+' — '+c.role+'</option>').join('');
+      if(deck.some(c=>c.id===priorCharacter))characterSelect.value=priorCharacter;
+      const character=deck.find(c=>c.id===characterSelect.value)||deck[0];
       const destSelect=$('heroDestination');
       const oldValue=destSelect.value;
       destSelect.innerHTML=ownedPlanets(humanFaction).map(p=>'<option value="'+p.id+'">'+p.name+'</option>').join('');
       if(ownedPlanets(humanFaction).some(p=>p.id===oldValue))destSelect.value=oldValue;
       const dest=planet(destSelect.value),cruiser=$('shipType').value==='cruiser',cost=cruiser?5:2;
-      $('heroStatus').textContent=started?heroes[humanFaction].mark+' '+heroes[humanFaction].name+' · posição: '+(loc?loc.name:'nenhuma')+'. '+heroes[humanFaction].ability:'Escolha uma facção para mobilizar seu campeão.';
+      $('heroStatus').textContent=started?character.name+' · posição: '+(loc?loc.name:'nenhuma')+'. '+character.role:'Escolha uma facção para mobilizar seu campeão.';
+      $('characterDescription').textContent=character.desc+' Habilidade da facção: '+heroes[humanFaction].ability;
       $('moveHeroBtn').disabled=!(started&&!gameOver&&currentFaction===humanFaction&&loc&&dest&&dest.id!==loc.id&&distanceWithin(loc.id,dest.id,cruiser?2:1)&&fleet[humanFaction]>0&&credits[humanFaction]>=cost);
       $('moveHeroBtn').textContent='🚀 Transportar campeão · '+cost+' créditos';
       $('buyShipBtn').disabled=!(started&&!gameOver&&currentFaction===humanFaction&&credits[humanFaction]>=2);
@@ -506,13 +539,19 @@
       const src=planet(selectedPlanetId),tgt=planet(targetPlanetId);
       $('spaceAttackBtn').disabled=!(started&&!gameOver&&currentFaction===humanFaction&&src&&tgt&&src.owner===humanFaction&&tgt.owner!==humanFaction&&src.links.includes(tgt.id)&&fleet[humanFaction]>0&&credits[humanFaction]>=1);
     }
+    function selectHeroCharacter(){
+      selectedHeroes[humanFaction]=$('heroCharacter').value;
+      renderPhaseTwo();
+      showToast('Campeão selecionado: '+$('heroCharacter').selectedOptions[0].textContent.split(' — ')[0]);
+    }
     function moveHero(){
       const origin=planet(heroLocations[humanFaction]),dest=planet($('heroDestination').value);
       const cruiser=$('shipType').value==='cruiser',cost=cruiser?5:2;
       if(!origin||!dest||dest.owner!==humanFaction||dest.id===origin.id||!distanceWithin(origin.id,dest.id,cruiser?2:1)||fleet[humanFaction]<1||credits[humanFaction]<cost)return;
       credits[humanFaction]-=cost;heroLocations[humanFaction]=dest.id;fleet[humanFaction]--;
-      addLog('🚀','Campeão transportado',heroes[humanFaction].name+' chegou a '+dest.name+'.');render();showToast('Campeão chegou a '+dest.name+'.');
+      addLog('🚀','Campeão transportado',selectedCharacter().name+' chegou a '+dest.name+'.');render();showToast('Campeão chegou a '+dest.name+'.');
     }
+    function selectedCharacter(){return characterDecks[humanFaction].find(c=>c.id===selectedHeroes[humanFaction])||characterDecks[humanFaction][0];}
     function buyShip(){
       if(!started||gameOver||currentFaction!==humanFaction||credits[humanFaction]<2)return;
       credits[humanFaction]-=2;fleet[humanFaction]++;
@@ -537,8 +576,8 @@
       const attackerCount=Math.min(3,source.troops-1);
       const defenderCount=Math.min(2,target.troops);
       if(attackerCount<1||defenderCount<1)return {ok:false,captured:false};
-      const attackMod=(attackerFaction==='sith'?1:0)+(attackerFaction==='sith'&&heroLocations.sith===source.id?1:0);
-      const defendMod=(target.owner==='jedi'?1:0)+(target.owner==='jedi'&&heroLocations.jedi===target.id?1:0);
+      const attackMod=(attackerFaction==='sith'?1:0)+(attackerFaction==='sith'&&heroLocations.sith===source.id?1:0)+(attackerFaction==='sith'&&selectedHeroes.sith==='maul'?1:0);
+      const defendMod=(target.owner==='jedi'?1:0)+(target.owner==='jedi'&&heroLocations.jedi===target.id?1:0)+(target.owner==='jedi'&&selectedHeroes.jedi==='obiwan'?1:0);
       const attackDice=rollDice(attackerCount,attackMod);
       const defendDice=rollDice(defenderCount,defendMod);
       let attackerLoss=0,defenderLoss=0;
@@ -558,6 +597,7 @@
         const oldOwner=target.owner;
         target.owner=attackerFaction;target.troops=moved;
         if(attackerFaction==='bounty')credits.bounty+=4;
+        if(attackerFaction==='bounty'&&selectedHeroes.bounty==='cadbane')credits.bounty+=2;
         if(record)addLog('⚔','Planeta conquistado',factions[attackerFaction].name+' tomou '+target.name+(oldOwner?' de '+factions[oldOwner].name:'')+'.');
       }else if(record){
         addLog('⚔','Combate em '+target.name,'Ataque '+attackDice.join(',')+' · Defesa '+defendDice.join(',')+'. Perdas: '+attackerLoss+' sua(s), '+defenderLoss+' inimiga(s).');
