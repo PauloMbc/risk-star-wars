@@ -573,6 +573,20 @@
       $('factionChoices').innerHTML=era.factions.map(f=>{const base=factions[f.id];return '<button type="button" class="choice '+(f.id===selectedFaction?'active':'')+'" data-faction="'+f.id+'" style="--choice-color:'+base.color+'"><div class="choice-mark">'+base.mark+'</div><div class="choice-title">'+f.label+'</div><div class="choice-role">'+f.source.toUpperCase()+'</div><div class="choice-desc">'+(f.id==='jedi'?'Liderança, defesa e resistência.':f.id==='sith'?'Pressão militar e domínio ofensivo.':'Contratos, dinheiro e operações especiais.')+'</div></button>';}).join('');
       $('factionChoices').querySelectorAll('[data-faction]').forEach(b=>b.addEventListener('click',()=>{selectedFaction=b.dataset.faction;renderFactionChoices();showSetupStage('roster');}));
     }
+    function championGamePower(name,id){
+      const powers={
+        'Anakin Skywalker':'anakin','Ahsoka Tano':'ahsoka','Obi-Wan Kenobi':'defesa','Yoda':'cura',
+        'Mace Windu':'mace','Qui-Gon Jinn':'quigon','Luke Skywalker':'equilibrio',
+        'Darth Vader':'dano','Darth Maul':'agressao','Jango Fett':'contratos','Cad Bane':'submundo',
+        'Aurra Sing':'precisao','Pre Vizsla':'tropas','Boba Fett':'contratos','Leia Organa':'lideranca',
+        'Han Solo e Chewbacca':'contrabando','Han Solo':'contrabando','Conde Dookan':'estrategia',
+        'General Grievous':'agressao','Asajj Ventress':'agressao','Imperador Palpatine':'dano',
+        'Moff Gideon':'taticas','Grande Almirante Thrawn':'estrategia','Thrawn':'estrategia',
+        'Mando':'mobilidade','Bo-Katan Kryze':'tropas','Fennec Shand':'precisao','Embo':'precisao',
+        'Black Krrsantan':'ataque'
+      };
+      return powers[name]||'era';
+    }
     function commanderBonus(name,index){
       const profiles={
         'General Plo Koon':{attack:0,defense:2,economy:0,mobility:1},
@@ -673,13 +687,20 @@
       credits={jedi:factions.jedi.credits,sith:factions.sith.credits,bounty:factions.bounty.credits};
       heroLocations={jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
       selectedHeroes={jedi:"luke",sith:"vader",bounty:"jango"};
-      if(!characterDecks[humanFaction].some(ch=>ch.id===chosenChampion[0])){
-        characterDecks[humanFaction].push({id:chosenChampion[0],name:chosenChampion[1],role:'Champion · '+cfg.label,power:'era',desc:'Champion selecionado para a era '+activeEra().name+'.'});
-      }
+      const chosenPower=championGamePower(chosenChampion[1],chosenChampion[0]);
+      const existingChampion=characterDecks[humanFaction].findIndex(ch=>ch.id===chosenChampion[0]);
+      const championEntry={id:chosenChampion[0],name:chosenChampion[1],role:'Champion · '+cfg.label,power:chosenPower,desc:'Poder especial: '+chosenPower+'. Selecionado para a era '+activeEra().name+'.'};
+      if(existingChampion<0)characterDecks[humanFaction].push(championEntry);
+      else characterDecks[humanFaction][existingChampion]={...characterDecks[humanFaction][existingChampion],...championEntry};
       selectedHeroes[humanFaction]=chosenChampion[0];
       fleet={jedi:1,sith:1,bounty:1};
       const coIndex=cfg.commanders.findIndex(x=>x[0]===chosenCommander[0]);
       const bonus=commanderBonus(chosenCommander[1],Math.max(0,coIndex));
+      selectedCommanders[humanFaction]=chosenCommander[0];
+      const commanderEntry={id:chosenCommander[0],name:chosenCommander[1],role:'Comandante · '+cfg.label,power:chosenPower,desc:commanderDescription(chosenCommander[1]),stats:bonus,icon:'🛡'};
+      const commanderExisting=commanderDecks[humanFaction].findIndex(co=>co.id===chosenCommander[0]);
+      if(commanderExisting<0)commanderDecks[humanFaction].push(commanderEntry);
+      else commanderDecks[humanFaction][commanderExisting]={...commanderDecks[humanFaction][commanderExisting],...commanderEntry};
       credits[humanFaction]+=bonus.economy;
       const cap=planet(capitalId(humanFaction));
       if(cap)cap.troops+=Math.floor((bonus.attack+bonus.defense)/2);
@@ -894,7 +915,7 @@
     }
     function moveHero(){
       const origin=planet(heroLocations[humanFaction]),dest=planet($('heroDestination').value);
-      const cruiser=$('shipType').value==='cruiser',cost=cruiser?5:2;
+      const cruiser=$('shipType').value==='cruiser',cost=Math.max(1,(cruiser?5:2)-(selectedHeroes[humanFaction]==='ahsoka'?1:0));
       if(!origin||!dest||dest.owner!==humanFaction||dest.id===origin.id||!distanceWithin(origin.id,dest.id,cruiser?2:1)||fleet[humanFaction]<1||credits[humanFaction]<cost)return;
       credits[humanFaction]-=cost;heroLocations[humanFaction]=dest.id;fleet[humanFaction]--;
       addLog('🚀','Campeão transportado',selectedCharacter().name+' chegou a '+dest.name+'.');render();showToast('Campeão chegou a '+dest.name+'.');
@@ -925,9 +946,13 @@
       const defenderCount=Math.min(2,target.troops);
       if(attackerCount<1||defenderCount<1)return {ok:false,captured:false};
       const commander=commanderDecks[attackerFaction].find(c=>c.id===selectedCommanders[attackerFaction]);
-      const attackMod=(attackerFaction==='sith'?1:0)+(attackerFaction==='sith'&&heroLocations.sith===source.id?1:0)+(attackerFaction==='sith'&&selectedHeroes.sith==='maul'?1:0)+(commander&&commander.stats.attack>=2?1:0);
+      const attackHero=selectedHeroes[attackerFaction],attackAtSource=heroLocations[attackerFaction]===source.id;
+      const attackChampionBonus=(attackerFaction==='jedi'&&attackAtSource&&['anakin','mace'].includes(attackHero)?1:0)+(attackerFaction==='sith'&&attackAtSource&&['vader','maul','dooku','grievous','ventress','gideon','thrawn'].includes(attackHero)?1:0)+(attackerFaction==='bounty'&&attackAtSource&&['jango','cadbane','boba','maul_bounty','embo','krrsantan'].includes(attackHero)?1:0);
+      const attackMod=(attackerFaction==='sith'?1:0)+(attackerFaction==='sith'&&heroLocations.sith===source.id?1:0)+(attackerFaction==='sith'&&selectedHeroes.sith==='maul'?1:0)+attackChampionBonus+(commander&&commander.stats.attack>=2?1:0);
       const defenderCommander=commanderDecks[target.owner].find(c=>c.id===selectedCommanders[target.owner]);
-      const defendMod=(target.owner==='jedi'?1:0)+(target.owner==='jedi'&&heroLocations.jedi===target.id?1:0)+(target.owner==='jedi'&&selectedHeroes.jedi==='obiwan'?1:0)+(defenderCommander&&defenderCommander.stats.defense>=2?1:0);
+      const defendHero=selectedHeroes[target.owner],heroDefending=heroLocations[target.owner]===target.id;
+      const championDefenseBonus=(target.owner==='jedi'&&heroDefending&&['obiwan','yoda','quigon','luke'].includes(defendHero)?1:0)+(target.owner==='sith'&&heroDefending&&['vader','sidious','gideon','thrawn'].includes(defendHero)?1:0)+(target.owner==='bounty'&&heroDefending&&['boba','bossk','krrsantan'].includes(defendHero)?1:0);
+      const defendMod=(target.owner==='jedi'?1:0)+(target.owner==='jedi'&&heroLocations.jedi===target.id?1:0)+(target.owner==='jedi'&&selectedHeroes.jedi==='obiwan'?1:0)+championDefenseBonus+(defenderCommander&&defenderCommander.stats.defense>=2?1:0);
       const attackDice=rollDice(attackerCount,attackMod);
       const defendDice=rollDice(defenderCount,defendMod);
       let attackerLoss=0,defenderLoss=0;
