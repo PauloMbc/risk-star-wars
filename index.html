@@ -219,17 +219,18 @@
 
   <div class="overlay" id="setupOverlay">
     <div class="setup-card setup-hub">
-      <div class="hub-heading"><div><div class="hub-kicker">RISK STAR WARS · COMANDO DE CAMPANHA</div><div class="hub-title">Monte seu <span>alto comando.</span></div><p class="hub-sub">Escolha sua facção, um campeão e um comandante antes de iniciar. A combinação define os atributos iniciais e a forma como sua força luta.</p></div><div class="hub-step">01 / 03 · PREPARAÇÃO</div></div>
-      <div class="hub-section-label">01 — ESCOLHA SUA FACÇÃO</div>
-      <div class="faction-choice hub-factions" id="factionChoices"></div>
-      <div class="hub-section-label">02 — SELECIONE SEU CAMPEÃO</div>
-      <div class="hub-roster" id="championChoices"></div>
-      <div class="hub-section-label">03 — ESCOLHA SEU COMANDANTE</div>
-      <div class="hub-roster" id="commanderChoices"></div>
-      <div class="hub-loadout"><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS DO CAMPEÃO</div><div id="championStats"></div></div><div class="hub-loadout-card"><div class="hub-loadout-title">DOUTRINA DO COMANDANTE</div><div id="commanderStats"></div></div></div>
-      <div class="hub-summary" id="loadoutSummary"></div>
-      <button class="launch-btn hub-start" id="startBtn" type="button">✦ CONFIRMAR ALTO COMANDO E INICIAR</button>
-      <div class="hub-foot">Sua seleção aplica bônus reais de combate e economia durante a campanha.</div>
+      <div class="hub-heading"><div><div class="hub-kicker">RISK STAR WARS · CAMPANHA GALÁCTICA</div><div class="hub-title">Escolha seu <span>destino.</span></div><p class="hub-sub">Prepare a campanha em etapas: era, facção, campeão e comandante.</p></div><div class="hub-step" id="setupStepLabel">01 / 04 · ERA</div></div>
+      <div class="setup-stage" id="eraStage"><div class="hub-section-label">01 — ESCOLHA A ERA</div><div class="faction-choice hub-factions" id="eraChoices"></div></div>
+      <div class="setup-stage hidden" id="factionStage"><div class="hub-section-label">02 — ESCOLHA A FACÇÃO DESTA ERA</div><div class="faction-choice hub-factions" id="factionChoices"></div><button class="launch-btn hub-start" id="backToEraBtn" type="button">← VOLTAR ÀS ERAS</button></div>
+      <div class="setup-stage hidden" id="rosterStage">
+        <div class="hub-section-label">03 — ESCOLHA SEU CHAMPION</div><div class="hub-roster" id="championChoices"></div>
+        <div class="hub-section-label">04 — ESCOLHA SEU COMANDANTE</div><div class="hub-roster" id="commanderChoices"></div>
+        <div class="hub-loadout"><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS DO CHAMPION</div><div id="championStats"></div></div><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS DO COMANDANTE</div><div id="commanderStats"></div></div></div>
+        <div class="hub-summary" id="loadoutSummary"></div>
+        <button class="launch-btn hub-start" id="startBtn" type="button">✦ CONFIRMAR E INICIAR PARTIDA</button>
+        <button class="launch-btn hub-start" id="backToFactionBtn" type="button">← VOLTAR ÀS FACÇÕES</button>
+      </div>
+      <div class="hub-foot">Champions e comandantes começam na capital. Para levá-los a outros planetas, será necessário transportá-los por naves.</div>
     </div>
   </div>
   <div class="overlay hidden" id="resultOverlay">
@@ -268,6 +269,8 @@
     let planets = [];
     let humanFaction = 'jedi';
     let selectedFaction = 'jedi';
+    let selectedEra = 'clonewars';
+    let setupStage = 'era';
     let selectedPlanetId = null;
     let targetPlanetId = null;
     let currentFaction = 'jedi';
@@ -315,6 +318,8 @@
     function init(){
       renderChoices();
       $('startBtn').addEventListener('click',startCampaign);
+      $('backToEraBtn').addEventListener('click',()=>showSetupStage('era'));
+      $('backToFactionBtn').addEventListener('click',()=>showSetupStage('faction'));
       $('restartBtn').addEventListener('click',()=>{if(started) showToast('A campanha será reiniciada.'); $('setupOverlay').classList.remove('hidden');});
       $('playAgainBtn').addEventListener('click',()=>{$('resultOverlay').classList.add('hidden');$('setupOverlay').classList.remove('hidden');});
       $('helpBtn').addEventListener('click',showHelp);
@@ -331,23 +336,68 @@
       render();
     }
 
+    const eraConfigs = {
+      clonewars:{name:'Clone Wars',subtitle:'A República, a Confederação e os caçadores',factions:[
+        {id:'jedi',label:'República',source:'Republica',champions:[['obiwan','Obi-Wan Kenobi'],['anakin','Anakin Skywalker'],['mace','Mace Windu']],commanders:[['cody','Cody'],['rex','Rex'],['ahsoka','Ahsoka Tano']]},
+        {id:'sith',label:'Confederação',source:'Confederação',champions:[['dooku','Conde Dookan'],['grievous','General Grievous'],['ventress','Asajj Ventress']],commanders:[['grievous_cmd','General Grievous'],['ventress_cmd','Asajj Ventress'],['dooku_cmd','Conde Dookan']]},
+        {id:'bounty',label:'Caçadores de Recompensas',source:'Caçadores de Recompensa',champions:[['maul_bounty','Darth Maul'],['jango','Jango Fett'],['cadbane','Cad Bane'],['previzsla','Pre Vizsla'],['aurasing','Aura Sing']],commanders:[['jango_cmd','Jango Fett'],['cadbane_cmd','Cad Bane'],['previzsla_cmd','Pre Vizsla']]}
+      ]},
+      classic:{name:'Clássico',subtitle:'A Rebelião, o Império e o submundo',factions:[
+        {id:'jedi',label:'Rebeldes',source:'Rebeldes',champions:[['luke','Luke Skywalker'],['hanchewie','Han Solo e Chewbacca'],['leia','Leia Organa']],commanders:[['leia_cmd','Leia Organa'],['han_cmd','Han Solo'],['ackbar','Almirante Ackbar']]},
+        {id:'sith',label:'Império',source:'Império',champions:[['vader','Darth Vader'],['palpatine','Imperador Palpatine'],['boba','Boba Fett']],commanders:[['tarkin','Grand Moff Tarkin'],['piett','Almirante Piett'],['veers','General Veers']]},
+        {id:'bounty',label:'Caçadores de Recompensas',source:'Caçadores de Recompensas',champions:[['boba','Boba Fett'],['greedo','Greedo'],['bossk','Bossk']],commanders:[['boba_cmd','Boba Fett'],['bossk_cmd','Bossk'],['greedo_cmd','Greedo']]}
+      ]},
+      postempire:{name:'Pós-Império',subtitle:'O Renascimento do Império, a Nova República e os caçadores',factions:[
+        {id:'jedi',label:'Nova República',source:'Nova Republica',champions:[['mando','Mando'],['bo-katan','Bo-Katan Kryze'],['ahsoka_post','Ahsoka Tano']],commanders:[['ahsoka_post_cmd','Ahsoka Tano'],['mando_cmd','Mando'],['bo-katan_cmd','Bo-Katan Kryze']]},
+        {id:'sith',label:'Renascimento do Império',source:'Renascimento do Império',champions:[['gideon','Moff Gideon'],['thrawn','Grande Almirante Thrawn']],commanders:[['thrawn_cmd','Grande Almirante Thrawn'],['gideon_cmd','Moff Gideon'],['piett_post','Comando Imperial']]},
+        {id:'bounty',label:'Caçadores de Recompensas',source:'Caçadores de recompensas',champions:[['fennec','Fennec Shand'],['embo','Embo'],['krrsantan','Black Krrsantan']],commanders:[['fennec_cmd','Fennec Shand'],['embo_cmd','Embo'],['krrsantan_cmd','Black Krrsantan']]}
+      ]}
+    };
+    let selectedByEra = {};
+    function activeEra(){return eraConfigs[selectedEra];}
+    function activeEraFaction(){return activeEra().factions.find(f=>f.id===selectedFaction)||activeEra().factions[0];}
+    function showSetupStage(stage){
+      setupStage=stage;
+      ['eraStage','factionStage','rosterStage'].forEach(id=>$(id).classList.add('hidden'));
+      $(stage==='era'?'eraStage':stage==='faction'?'factionStage':'rosterStage').classList.remove('hidden');
+      $('setupStepLabel').textContent=stage==='era'?'01 / 04 · ERA':stage==='faction'?'02 / 04 · FACÇÃO':'03–04 / 04 · ALTO COMANDO';
+      $('setupOverlay').scrollTop=0;
+      if(stage==='faction')renderFactionChoices();
+      if(stage==='roster')renderRosterChoices();
+    }
     function renderChoices(){
-      $('factionChoices').innerHTML=factionIds.map(id=>{const f=factions[id];return '<button type="button" class="choice '+(id===selectedFaction?'active':'')+'" data-faction="'+id+'" style="--choice-color:'+f.color+'"><div class="choice-mark">'+f.mark+'</div><div class="choice-title">'+f.name+'</div><div class="choice-role">'+f.role+'</div><div class="choice-desc">'+f.desc+'</div></button>';}).join('');
-      $('factionChoices').querySelectorAll('[data-faction]').forEach(btn=>btn.addEventListener('click',()=>{selectedFaction=btn.dataset.faction;renderChoices();}));
-      const champions=characterDecks[selectedFaction],commanders=commanderDecks[selectedFaction];
-      if(!champions.some(c=>c.id===selectedChampions[selectedFaction]))selectedChampions[selectedFaction]=champions[0].id;
-      if(!commanders.some(c=>c.id===selectedCommanders[selectedFaction]))selectedCommanders[selectedFaction]=commanders[0].id;
-      $('championChoices').innerHTML=champions.map(c=>'<button type="button" class="hub-person '+(selectedChampions[selectedFaction]===c.id?'active':'')+'" data-champion="'+c.id+'"><div class="person-icon">✦</div><div class="person-name">'+c.name+'</div><div class="person-role">'+c.role+'</div><div class="person-desc">'+c.desc+'</div></button>').join('');
-      $('commanderChoices').innerHTML=commanders.map(c=>'<button type="button" class="hub-person '+(selectedCommanders[selectedFaction]===c.id?'active':'')+'" data-commander="'+c.id+'"><div class="person-icon">'+c.icon+'</div><div class="person-name">'+c.name+'</div><div class="person-role">'+c.role+'</div><div class="person-desc">'+c.desc+'</div></button>').join('');
-      $('championChoices').querySelectorAll('[data-champion]').forEach(b=>b.addEventListener('click',()=>{selectedChampions[selectedFaction]=b.dataset.champion;renderChoices();}));
-      $('commanderChoices').querySelectorAll('[data-commander]').forEach(b=>b.addEventListener('click',()=>{selectedCommanders[selectedFaction]=b.dataset.commander;renderChoices();}));
-      const ch=champions.find(c=>c.id===selectedChampions[selectedFaction]),co=commanders.find(c=>c.id===selectedCommanders[selectedFaction]);
+      $('eraChoices').innerHTML=Object.entries(eraConfigs).map(([id,e])=>'<button type="button" class="choice '+(id===selectedEra?'active':'')+'" data-era="'+id+'" style="--choice-color:#f3c969"><div class="choice-mark">✦</div><div class="choice-title">'+e.name+'</div><div class="choice-role">ERA GALÁCTICA</div><div class="choice-desc">'+e.subtitle+'</div></button>').join('');
+      $('eraChoices').querySelectorAll('[data-era]').forEach(b=>b.addEventListener('click',()=>{selectedEra=b.dataset.era;selectedFaction=activeEra().factions[0].id;showSetupStage('faction');}));
+      showSetupStage('era');
+    }
+    function renderFactionChoices(){
+      const era=activeEra();
+      $('factionChoices').innerHTML=era.factions.map(f=>{const base=factions[f.id];return '<button type="button" class="choice '+(f.id===selectedFaction?'active':'')+'" data-faction="'+f.id+'" style="--choice-color:'+base.color+'"><div class="choice-mark">'+base.mark+'</div><div class="choice-title">'+f.label+'</div><div class="choice-role">'+f.source.toUpperCase()+'</div><div class="choice-desc">'+(f.id==='jedi'?'Liderança, defesa e resistência.':f.id==='sith'?'Pressão militar e domínio ofensivo.':'Contratos, dinheiro e operações especiais.')+'</div></button>';}).join('');
+      $('factionChoices').querySelectorAll('[data-faction]').forEach(b=>b.addEventListener('click',()=>{selectedFaction=b.dataset.faction;showSetupStage('roster');}));
+    }
+    function renderRosterChoices(){
+      const config=activeEraFaction();
+      const saved=selectedByEra[selectedEra+'_'+selectedFaction]||{};
+      const champions=config.champions.map(([id,name])=>({id,name,role:'Champion · '+config.label,desc:'Disponível nesta era e facção.'}));
+      const commanders=config.commanders.map(([id,name],i)=>({id,name,role:'Comandante · '+config.label,desc:'Liderança e doutrina militar.',icon:['⚔','🛡','✦'][i%3],stats:[{attack:2,defense:1,economy:0,mobility:0},{attack:0,defense:2,economy:0,mobility:1},{attack:0,defense:1,economy:2,mobility:0}][i%3]}));
+      const key=selectedEra+'_'+selectedFaction;
+      if(!saved.champion||!champions.some(x=>x.id===saved.champion))saved.champion=champions[0].id;
+      if(!saved.commander||!commanders.some(x=>x.id===saved.commander))saved.commander=commanders[0].id;
+      selectedByEra[key]=saved;
+      selectedChampions[selectedFaction]=saved.champion;
+      selectedCommanders[selectedFaction]=saved.commander;
+      $('championChoices').innerHTML=champions.map(x=>'<button type="button" class="hub-person '+(saved.champion===x.id?'active':'')+'" data-champion="'+x.id+'"><div class="person-icon">✦</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
+      $('commanderChoices').innerHTML=commanders.map(x=>'<button type="button" class="hub-person '+(saved.commander===x.id?'active':'')+'" data-commander="'+x.id+'"><div class="person-icon">'+x.icon+'</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
+      $('championChoices').querySelectorAll('[data-champion]').forEach(b=>b.addEventListener('click',()=>{saved.champion=b.dataset.champion;selectedByEra[key]=saved;renderRosterChoices();}));
+      $('commanderChoices').querySelectorAll('[data-commander]').forEach(b=>b.addEventListener('click',()=>{saved.commander=b.dataset.commander;selectedByEra[key]=saved;renderRosterChoices();}));
       const base={attack:3,defense:3,economy:2,mobility:2};
-      const champBonuses={luke:{attack:1,defense:2,economy:0,mobility:0},obiwan:{attack:0,defense:3,economy:0,mobility:0},yoda:{attack:1,defense:2,economy:0,mobility:1},vader:{attack:3,defense:1,economy:0,mobility:0},maul:{attack:2,defense:0,economy:0,mobility:2},kraytora:{attack:2,defense:2,economy:0,mobility:0},jango:{attack:2,defense:1,economy:1,mobility:1},cadbane:{attack:2,defense:0,economy:2,mobility:1},previzsla:{attack:2,defense:2,economy:0,mobility:0},aurasing:{attack:3,defense:0,economy:1,mobility:1},maul_bounty:{attack:2,defense:1,economy:0,mobility:2}};
-      const cs=champBonuses[ch.id]||{attack:1,defense:1,economy:0,mobility:0},stats={attack:Math.min(5,base.attack+cs.attack),defense:Math.min(5,base.defense+cs.defense),economy:Math.min(5,base.economy+cs.economy),mobility:Math.min(5,base.mobility+cs.mobility)};
+      const champStats=champions.find(x=>x.id===saved.champion);
+      const commander=commanders.find(x=>x.id===saved.commander);
+      const champBonus={attack:1,defense:1,economy:0,mobility:0};
+      const stats={attack:Math.min(5,base.attack+champBonus.attack),defense:Math.min(5,base.defense+champBonus.defense),economy:base.economy,mobility:base.mobility};
       $('championStats').innerHTML=statMarkup(stats);
-      $('commanderStats').innerHTML=statMarkup({attack:Math.min(5,base.attack+co.stats.attack),defense:Math.min(5,base.defense+co.stats.defense),economy:Math.min(5,base.economy+co.stats.economy),mobility:Math.min(5,base.mobility+co.stats.mobility)});
-      $('loadoutSummary').innerHTML='<span>FACÇÃO <b>'+factions[selectedFaction].name+'</b></span><span>CAMPEÃO <b>'+ch.name+'</b></span><span>COMANDANTE <b>'+co.name+'</b></span>';
+      $('commanderStats').innerHTML=statMarkup({attack:Math.min(5,base.attack+commander.stats.attack),defense:Math.min(5,base.defense+commander.stats.defense),economy:Math.min(5,base.economy+commander.stats.economy),mobility:Math.min(5,base.mobility+commander.stats.mobility)});
+      $('loadoutSummary').innerHTML='<span>ERA <b>'+activeEra().name+'</b></span><span>FACÇÃO <b>'+config.label+'</b></span><span>CHAMPION <b>'+champStats.name+'</b></span><span>COMANDANTE <b>'+commander.name+'</b></span>';
     }
     function statMarkup(s){return [['Ataque',s.attack],['Defesa',s.defense],['Economia',s.economy],['Mobilidade',s.mobility]].map(([label,val])=>'<div class="hub-stat"><span>'+label+'</span><span class="hub-bar"><i style="width:'+(val*20)+'%"></i></span><strong>'+val+'</strong></div>').join('');}
     function applyLoadoutStats(){
@@ -359,18 +409,27 @@
       fleet[humanFaction]+=Math.floor(co.stats.mobility/2);
     }
     function startCampaign(){
+      const cfg=activeEraFaction();
+      const selected=selectedByEra[selectedEra+'_'+selectedFaction]||{};
+      const chosenChampion=cfg.champions.find(x=>x[0]===selected.champion)||cfg.champions[0];
+      const chosenCommander=cfg.commanders.find(x=>x[0]===selected.commander)||cfg.commanders[0];
       humanFaction=selectedFaction;
-      selectedHeroes[humanFaction]=selectedChampions[humanFaction];
-      applyLoadoutStats();
       planets=initialPlanets.map(p=>({...p}));
       currentFaction=humanFaction; round=1; reinforcements=0;
       credits={jedi:factions.jedi.credits,sith:factions.sith.credits,bounty:factions.bounty.credits};
       heroLocations={jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
       selectedHeroes={jedi:"luke",sith:"vader",bounty:"jango"};
+      selectedHeroes[humanFaction]=chosenChampion[0];
       fleet={jedi:1,sith:1,bounty:1};
+      const coIndex=cfg.commanders.findIndex(x=>x[0]===chosenCommander[0]);
+      const bonus=[{attack:2,defense:1,economy:0,mobility:0},{attack:0,defense:2,economy:0,mobility:1},{attack:0,defense:1,economy:2,mobility:0}][Math.max(0,coIndex)%3];
+      credits[humanFaction]+=bonus.economy;
+      const cap=planet(capitalId(humanFaction));
+      if(cap)cap.troops+=Math.floor((bonus.attack+bonus.defense)/2);
+      fleet[humanFaction]+=Math.floor(bonus.mobility/2);
       selectedPlanetId=capitalId(humanFaction); targetPlanetId=null; mercenaryUsed=false; started=true; gameOver=false; logs=[];
       $('setupOverlay').classList.add('hidden');
-      addLog('✦','Campanha iniciada',factions[humanFaction].name+' entrou na disputa pela galáxia.');
+      addLog('✦','Campanha iniciada',activeEra().name+' · '+cfg.label+' · '+chosenChampion[1]+' lidera a campanha com '+chosenCommander[1]+'.');
       startHumanTurn();
       render();
       showToast('Campanha iniciada. Escolha seus movimentos.');
