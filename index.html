@@ -262,6 +262,13 @@
     .hub-era-panel .hub-panel-title,.hub-faction-panel .hub-panel-title,.hub-character-panel .hub-panel-title{z-index:3}
     .hub-factions .choice:before{background-repeat:no-repeat}
 
+
+    .phase-four-panel{border-color:#655636;background:linear-gradient(145deg,#111b2a,#0b121f)}
+    .phase-four-panel .target-box{margin-top:9px}
+    .phase-four-panel .objective-progress{color:#f3c969;font-weight:800;font-size:10px;margin:8px 0 0}
+    .phase-four-panel #truceBtn{margin-top:5px}
+    @media(max-width:720px){.phase-four-panel{width:100%}.phase-four-panel .target-box{padding:10px}}
+
   </style>
 </head>
 <body>
@@ -373,6 +380,16 @@
           <button class="secondary-btn" id="espionageBtn" type="button" disabled>🛰 Espionar alvo · 3 créditos</button>
         </div>
         <div class="target-box" style="margin-top:10px"><div class="label">INTELIGÊNCIA SECRETA</div><strong id="espionageName">Nenhuma informação coletada</strong><p id="espionageReport">Selecione um planeta inimigo e use a espionagem para revelar tropas e preparar a ofensiva.</p></div>
+      </section>
+      <section class="panel action-area phase-four-panel" id="phaseFourPanel">
+        <div class="eyebrow">Fase 4 · Diplomacia e galáxia</div>
+        <div class="panel-title" style="margin:6px 0 12px">Conselho galáctico</div>
+        <label class="section-label" for="diplomacyFaction" style="display:block">Facção para negociar</label>
+        <select id="diplomacyFaction" style="width:100%;padding:10px;background:#0b1220;color:#e9f0fb;border:1px solid #34425b;border-radius:8px;margin-bottom:8px"></select>
+        <button class="primary-btn" id="truceBtn" type="button" disabled>🕊 Propor trégua · 3 créditos</button>
+        <p class="hint" id="diplomacyStatus">Negocie uma trégua para impedir temporariamente que uma facção ataque seus planetas.</p>
+        <div class="target-box"><div class="label">EVENTO GALÁCTICO</div><strong id="galacticEventName">Aguardando a campanha</strong><p id="galacticEventDescription">Eventos podem mudar recursos, reforços e a estratégia das facções.</p></div>
+        <div class="target-box"><div class="label">OBJETIVO ESPECIAL DA RODADA</div><strong id="objectiveName">Aguardando a campanha</strong><p id="objectiveDescription">Complete objetivos para receber créditos ou tropas extras.</p><p class="objective-progress" id="objectiveProgress"></p></div>
       </section>
     </aside>
   </main>
@@ -527,7 +544,13 @@
     let fleet = {jedi:1,sith:1,bounty:1};
     let activeContract = null;
     let espionageReports = {};
-    let sabotagedPlanet = null;
+    let sabotageOrders = {};
+    let diplomacyPacts = {};
+    let diplomacyMessage = 'Negocie uma trégua para impedir temporariamente que uma facção ataque seus planetas.';
+    let currentGalacticEvent = null;
+    let currentObjective = null;
+    let preparedRound = 0;
+    let conquestsThisRound = 0;
     let toastTimer = null;
     const $ = id => document.getElementById(id);
     const factionIds = ['jedi','sith','bounty'];
@@ -552,6 +575,8 @@
       $('spaceAttackBtn').addEventListener('click',spaceAttack);
       $('contractBtn').addEventListener('click',acceptContract);
       $('espionageBtn').addEventListener('click',performEspionage);
+      $('truceBtn').addEventListener('click',proposeTruce);
+      $('diplomacyFaction').addEventListener('change',renderPhaseFour);
       $('shipType').addEventListener('change',renderPhaseTwo);
       $('heroCharacter').addEventListener('change',selectHeroCharacter);
       render();
@@ -743,7 +768,7 @@
       else characterDecks[humanFaction][existingChampion]={...characterDecks[humanFaction][existingChampion],...championEntry};
       selectedHeroes[humanFaction]=chosenChampion[0];
       fleet={jedi:1,sith:1,bounty:1};
-      activeContract=null;espionageReports={};sabotagedPlanet=null;
+      activeContract=null;espionageReports={};sabotageOrders={};diplomacyPacts={};diplomacyMessage='A campanha começou. Escolha uma facção para abrir negociações.';currentGalacticEvent=null;currentObjective=null;preparedRound=0;conquestsThisRound=0;
       const coIndex=cfg.commanders.findIndex(x=>x[0]===chosenCommander[0]);
       const bonus=commanderBonus(chosenCommander[1],Math.max(0,coIndex));
       selectedCommanders[humanFaction]=chosenCommander[0];
@@ -857,6 +882,7 @@
       renderIntel();
       renderPhaseTwo();
       renderPhaseThree();
+      renderPhaseFour();
       const selected=planet(selectedPlanetId);
       const target=planet(targetPlanetId);
       const sourceOk=started&&!gameOver&&currentFaction===humanFaction&&selected&&selected.owner===humanFaction;
@@ -901,8 +927,9 @@
 
     function startHumanTurn(){
       if(checkVictory())return;
+      prepareRoundSystems();
       currentFaction=humanFaction;
-      reinforcements=calcReinforcements(humanFaction);
+      reinforcements=calcReinforcements(humanFaction)+(currentGalacticEvent&&currentGalacticEvent.reinforcements||0);
       mercenaryUsed=false;
       credits[humanFaction]+=ownedPlanets(humanFaction).reduce((sum,p)=>sum+p.income,0);
       if(humanFaction==="jedi"&&planet(heroLocations.jedi)?.owner==="jedi")planet(heroLocations.jedi).troops+=1;
@@ -936,6 +963,108 @@
         frontier=next;
       }
       return false;
+    }
+    function recordSpecialCapture(attackerFaction,target){
+      if(attackerFaction===humanFaction)conquestsThisRound++;
+      if(activeContract&&activeContract.target===target.id){
+        if(attackerFaction===humanFaction){
+          credits[humanFaction]+=activeContract.reward;
+          addLog('🎯','Contrato concluído',target.name+' conquistado. Recompensa: '+activeContract.reward+' créditos.');
+          showToast('Contrato concluído! Créditos recebidos.');
+        }else{
+          addLog('🎯','Contrato cancelado',target.name+' foi tomado por outra facção.');
+        }
+        activeContract=null;
+      }
+    }
+    const galacticEvents=[
+      {id:'corellia',name:'Feira de Corellia',description:'Rotas comerciais movimentadas geram +3 créditos para você.',credits:3},
+      {id:'recruitment',name:'Mobilização de emergência',description:'A crise inspira novas tropas: +2 reforços nesta rodada.',reinforcements:2},
+      {id:'ionstorm',name:'Tempestade de íons',description:'Interferência nas comunicações: as facções rivais recebem 2 créditos a menos.',aiIncomePenalty:2},
+      {id:'blockade',name:'Bloqueio de hiperespaço',description:'Rotas interrompidas: as facções rivais recebem 1 reforço a menos.',aiReinforcementPenalty:1},
+      {id:'force',name:'Chamado da Força',description:'Sua capital recebe uma tropa adicional.',capitalTroops:1},
+      {id:'spice',name:'Rotas de especiarias',description:'O mercado clandestino rende bônus: +3 créditos aos Caçadores, +1 às demais facções.',spiceMarket:true}
+    ];
+    const specialObjectives=[
+      {id:'conquer',name:'Expansão territorial',description:'Conquiste pelo menos 1 planeta nesta rodada.',goal:1,reward:4,progress:()=>conquestsThisRound,complete:()=>conquestsThisRound>=1,rewardText:'+4 créditos'},
+      {id:'frontier',name:'Controle da fronteira',description:'Controle pelo menos 5 planetas.',goal:5,reward:5,progress:()=>ownedPlanets(humanFaction).length,complete:()=>ownedPlanets(humanFaction).length>=5,rewardText:'+5 créditos'},
+      {id:'hoth',name:'Avanço em Hoth',description:'Conquiste e mantenha Hoth sob seu controle.',goal:1,reward:4,progress:()=>planet('hoth')&&planet('hoth').owner===humanFaction?1:0,complete:()=>!!(planet('hoth')&&planet('hoth').owner===humanFaction),rewardText:'+4 créditos'},
+      {id:'wealth',name:'Fundo de guerra',description:'Acumule 18 créditos disponíveis.',goal:18,reward:2,progress:()=>credits[humanFaction],complete:()=>credits[humanFaction]>=18,rewardText:'+2 reforços na capital'}
+    ];
+    function prepareRoundSystems(){
+      if(preparedRound===round)return;
+      preparedRound=round;
+      conquestsThisRound=0;
+      Object.keys(diplomacyPacts).forEach(id=>{if(round>diplomacyPacts[id].untilRound)delete diplomacyPacts[id];});
+      Object.keys(espionageReports).forEach(id=>{if(round-espionageReports[id].round>2)delete espionageReports[id];});
+      const previous=currentGalacticEvent&&currentGalacticEvent.id;
+      let pool=galacticEvents.filter(e=>e.id!==previous);
+      currentGalacticEvent={...pool[Math.floor(Math.random()*pool.length)]};
+      if(currentGalacticEvent.credits)credits[humanFaction]+=currentGalacticEvent.credits;
+      if(currentGalacticEvent.spiceMarket)credits[humanFaction]+=humanFaction==='bounty'?3:1;
+      if(currentGalacticEvent.capitalTroops){const cap=planet(capitalId(humanFaction));if(cap)cap.troops+=currentGalacticEvent.capitalTroops;}
+      currentObjective={...specialObjectives[(round-1)%specialObjectives.length],completed:false};
+      addLog('✦','Evento galáctico: '+currentGalacticEvent.name,currentGalacticEvent.description);
+    }
+    function renderPhaseFour(){
+      const select=$('diplomacyFaction');
+      if(!select)return;
+      const oldValue=select.value;
+      const opponents=factionIds.filter(id=>id!==humanFaction);
+      select.innerHTML=opponents.map(id=>'<option value="'+id+'">'+factions[id].name+'</option>').join('');
+      if(opponents.includes(oldValue))select.value=oldValue;
+      const targetFaction=select.value;
+      const pact=targetFaction&&diplomacyPacts[targetFaction];
+      const truceActive=!!(pact&&round<=pact.untilRound);
+      $('truceBtn').disabled=!(started&&!gameOver&&currentFaction===humanFaction&&targetFaction&&!truceActive&&credits[humanFaction]>=3);
+      $('truceBtn').textContent=truceActive?'🕊 Trégua ativa · Rodada '+pact.untilRound:'🕊 Propor trégua · 3 créditos';
+      $('diplomacyStatus').textContent=truceActive?'A '+factions[targetFaction].name+' não atacará seus planetas até o final da rodada '+pact.untilRound+'.':diplomacyMessage;
+      if(currentGalacticEvent){
+        $('galacticEventName').textContent=currentGalacticEvent.name;
+        $('galacticEventDescription').textContent=currentGalacticEvent.description;
+      }else{
+        $('galacticEventName').textContent='Aguardando a campanha';
+        $('galacticEventDescription').textContent='Eventos podem mudar recursos, reforços e a estratégia das facções.';
+      }
+      if(currentObjective){
+        const progress=Math.min(currentObjective.goal,currentObjective.progress());
+        $('objectiveName').textContent=currentObjective.name+(currentObjective.completed?' · CONCLUÍDO':'');
+        $('objectiveDescription').textContent=currentObjective.description;
+        $('objectiveProgress').textContent=currentObjective.completed?'Recompensa recebida: '+currentObjective.rewardText:'Progresso: '+progress+' / '+currentObjective.goal+' · Recompensa: '+currentObjective.rewardText;
+        if(!currentObjective.completed&&started&&!gameOver&&currentObjective.complete()){
+          currentObjective.completed=true;
+          if(currentObjective.id==='wealth'){const cap=planet(capitalId(humanFaction));if(cap)cap.troops+=2;}
+          else credits[humanFaction]+=currentObjective.reward;
+          addLog('★','Objetivo especial concluído',currentObjective.name+' · recompensa: '+currentObjective.rewardText+'.');
+          $('objectiveName').textContent=currentObjective.name+' · CONCLUÍDO';
+          $('objectiveProgress').textContent='Recompensa recebida: '+currentObjective.rewardText;
+        }
+      }else{
+        $('objectiveName').textContent='Aguardando a campanha';
+        $('objectiveDescription').textContent='Complete objetivos para receber créditos ou tropas extras.';
+        $('objectiveProgress').textContent='';
+      }
+      if(!started||gameOver||currentFaction!==humanFaction)$('truceBtn').disabled=true;
+    }
+    function proposeTruce(){
+      const targetFaction=$('diplomacyFaction').value;
+      const existing=diplomacyPacts[targetFaction];
+      if(!started||gameOver||currentFaction!==humanFaction||!targetFaction||targetFaction===humanFaction||credits[humanFaction]<3||(existing&&round<=existing.untilRound))return;
+      credits[humanFaction]-=3;
+      const playerTerritories=ownedPlanets(humanFaction).length;
+      const rivalTerritories=ownedPlanets(targetFaction).length;
+      const chance=Math.max(0.35,Math.min(0.85,0.6+(playerTerritories-rivalTerritories)*0.06));
+      if(Math.random()<chance){
+        diplomacyPacts[targetFaction]={untilRound:round+1};
+        diplomacyMessage=factions[targetFaction].name+' aceitou a trégua. Seus planetas ficam protegidos contra ataques dessa facção por esta rodada e a próxima.';
+        addLog('🕊','Trégua diplomática firmada',factions[targetFaction].name+' suspenderá ataques contra seus planetas até a rodada '+(round+1)+'.');
+        showToast('Trégua firmada com '+factions[targetFaction].name+'.');
+      }else{
+        diplomacyMessage=factions[targetFaction].name+' recusou a proposta. O custo diplomático de 3 créditos foi pago.';
+        addLog('⚖','Negociação recusada',factions[targetFaction].name+' rejeitou sua proposta de trégua.');
+        showToast('A proposta de trégua foi recusada.');
+      }
+      render();
     }
     function renderPhaseThree(){
       const target=planet(targetPlanetId);
@@ -975,11 +1104,10 @@
       const target=planet(targetPlanetId);
       if(!started||gameOver||currentFaction!==humanFaction||!target||!target.owner||target.owner===humanFaction||credits[humanFaction]<3||espionageReports[target.id]?.round===round)return;
       credits[humanFaction]-=3;
-      const bountyBonus=humanFaction==='bounty'?1:0;
+      const sabotagePower=humanFaction==='bounty'?3:2;
       espionageReports[target.id]={name:target.name,troops:target.troops,note:'Informação obtida na rodada '+round+'.',round};
-      sabotagedPlanet=target;
-      addLog('🛰','Espionagem concluída',target.name+': '+target.troops+' tropas detectadas. A próxima fase de reforços inimiga será reduzida em '+(2+bountyBonus)+'.');
-      if(bountyBonus) sabotagedPlanet._sabotagePower=3;
+      sabotageOrders[target.owner]={planetId:target.id,power:sabotagePower,round};
+      addLog('🛰','Espionagem concluída',target.name+': '+target.troops+' tropas detectadas. Os próximos reforços desta facção serão reduzidos em '+sabotagePower+'.');
       showToast('Relatório obtido: '+target.troops+' tropas detectadas.');
       render();
     }
@@ -1029,7 +1157,7 @@
       fleet[humanFaction]--;credits[humanFaction]--;
       const damage=1+Math.floor(Math.random()*2);tgt.troops=Math.max(0,tgt.troops-damage);
       addLog('☄','Bombardeio orbital',src.name+' atingiu '+tgt.name+' e eliminou '+damage+' tropa(s).');
-      if(tgt.troops===0){const old=tgt.owner;tgt.owner=humanFaction;tgt.troops=1;credits[humanFaction]+=humanFaction==='bounty'?3:1;addLog('⚔','Planeta conquistado após bombardeio',tgt.name+' foi ocupado'+(old?' após expulsar '+factions[old].name:'')+'.');if(activeContract&&activeContract.target===tgt.id){credits[humanFaction]+=activeContract.reward;addLog('🎯','Contrato concluído',tgt.name+' conquistado por bombardeio. Recompensa: '+activeContract.reward+' créditos.');activeContract=null;}targetPlanetId=null;checkVictory();}
+      if(tgt.troops===0){const old=tgt.owner;tgt.owner=humanFaction;tgt.troops=1;credits[humanFaction]+=humanFaction==='bounty'?3:1;addLog('⚔','Planeta conquistado após bombardeio',tgt.name+' foi ocupado'+(old?' após expulsar '+factions[old].name:'')+'.');recordSpecialCapture(humanFaction,tgt);targetPlanetId=null;checkVictory();}
       render();showToast('Bombardeio concluído. Uma nave foi consumida.');
     }
 
@@ -1070,12 +1198,7 @@
         target.owner=attackerFaction;target.troops=moved;
         if(attackerFaction==='bounty')credits.bounty+=4;
         if(attackerFaction==='bounty'&&selectedHeroes.bounty==='cadbane')credits.bounty+=2;
-        if(attackerFaction===humanFaction&&activeContract&&activeContract.target===target.id){
-          credits[humanFaction]+=activeContract.reward;
-          addLog('🎯','Contrato concluído',target.name+' conquistado. Recompensa: '+activeContract.reward+' créditos.');
-          activeContract=null;
-          showToast('Contrato concluído! Créditos recebidos.');
-        }
+        recordSpecialCapture(attackerFaction,target);
         if(record)addLog('⚔','Planeta conquistado',factions[attackerFaction].name+' tomou '+target.name+(oldOwner?' de '+factions[oldOwner].name:'')+'.');
       }else if(record){
         addLog('⚔','Combate em '+target.name,'Ataque '+attackDice.join(',')+' · Defesa '+defendDice.join(',')+'. Perdas: '+attackerLoss+' sua(s), '+defenderLoss+' inimiga(s).');
@@ -1115,8 +1238,18 @@
       const held=ownedPlanets(factionId);
       if(!held.length){addLog('◎','Facção eliminada',factions[factionId].name+' perdeu todos os planetas.');return;}
       let pool=calcReinforcements(factionId);
-      if(sabotagedPlanet&&sabotagedPlanet.owner===factionId){const sabotagePower=sabotagedPlanet._sabotagePower||2;pool=Math.max(0,pool-sabotagePower);addLog('🛰','Sabotagem bem-sucedida',sabotagedPlanet.name+' perdeu '+sabotagePower+' reforço(s) por interferência inimiga.');sabotagedPlanet=null;}
+      const sabotageOrder=sabotageOrders[factionId];
+      if(sabotageOrder&&sabotageOrder.round===round){
+        const sabotagedTarget=planet(sabotageOrder.planetId);
+        if(sabotagedTarget&&sabotagedTarget.owner===factionId){
+          pool=Math.max(0,pool-sabotageOrder.power);
+          addLog('🛰','Sabotagem bem-sucedida',sabotagedTarget.name+' perdeu '+sabotageOrder.power+' reforço(s) por interferência inimiga.');
+        }
+        delete sabotageOrders[factionId];
+      }
       credits[factionId]+=held.reduce((sum,p)=>sum+p.income,0);
+      if(currentGalacticEvent&&currentGalacticEvent.aiIncomePenalty)credits[factionId]=Math.max(0,credits[factionId]-currentGalacticEvent.aiIncomePenalty);
+      if(currentGalacticEvent&&currentGalacticEvent.aiReinforcementPenalty)pool=Math.max(0,pool-currentGalacticEvent.aiReinforcementPenalty);
       const frontiers=held.filter(p=>p.links.some(id=>planet(id)&&planet(id).owner!==factionId));
       frontiers.sort((a,b)=>b.troops-a.troops);
       for(let i=0;i<pool;i++){
@@ -1130,7 +1263,9 @@
         if(!sources.length)break;
         let attack=null;
         for(const source of sources){
-          const targets=source.links.map(id=>planet(id)).filter(t=>t&&t.owner!==factionId);
+          const pact=diplomacyPacts[factionId];
+          const protectedByTruce=!!(pact&&round<=pact.untilRound);
+          const targets=source.links.map(id=>planet(id)).filter(t=>t&&t.owner!==factionId&&!(protectedByTruce&&t.owner===humanFaction));
           targets.sort((a,b)=>a.troops-b.troops);
           if(targets.length){attack={source,target:targets[0]};break;}
         }
@@ -1164,7 +1299,7 @@
     }
 
     function showHelp(){
-      alert('COMO JOGAR\n\n1. Escolha uma facção no início.\n2. Clique em um planeta seu para defini-lo como origem.\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\n6. Encerrar turno permite que as duas facções rivais atuem.\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\n8. Na Fase 2, transporte o campeão a planetas aliados com lançadeiras ou cruzadores, compre naves e use bombardeio orbital em alvos conectados.\n9. Na Fase 3, selecione um planeta inimigo como alvo: aceite um contrato para receber créditos ao conquistá-lo ou espione-o para revelar tropas e sabotar os próximos reforços.\n\nControle 10 planetas para vencer.');
+      alert('COMO JOGAR\n\n1. Escolha uma facção no início.\n2. Clique em um planeta seu para defini-lo como origem.\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\n6. Encerrar turno permite que as duas facções rivais atuem.\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\n8. Na Fase 2, transporte o campeão a planetas aliados com lançadeiras ou cruzadores, compre naves e use bombardeio orbital em alvos conectados.\n9. Na Fase 3, selecione um planeta inimigo como alvo: aceite um contrato para receber créditos ao conquistá-lo ou espione-o para revelar tropas e sabotar os próximos reforços.\n10. Na Fase 4, proponha tréguas às facções rivais, acompanhe o evento galáctico da rodada e conclua objetivos especiais para ganhar recursos.\n\nControle 10 planetas para vencer.');
     }
     function showToast(message){
       const el=$('toast');el.textContent=message;el.classList.add('show');
