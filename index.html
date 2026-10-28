@@ -153,12 +153,12 @@
     .hub-factions .choice{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-height:105px;border:1px solid #485a6b;border-radius:2px;background:#0c1722;color:#eef6ff;padding:12px 11px;text-align:left;box-shadow:inset 0 -45px 50px #02070dbd;transition:border-color .16s,box-shadow .16s}
     .hub-factions .choice:before{content:"";position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;opacity:.88;transition:transform .2s}
     .hub-factions .choice:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#06101be8 0%,#08131c99 50%,#07111b22 100%),linear-gradient(0deg,#02060bd9 0%,transparent 100%);pointer-events:none}
-    #eraChoices [data-era="clonewars"]:before{background-image:url('https://img.netzwelt.de/dw1200_dh675_sw0_sh0_sx0_sy0_sr16x9_nu0/picture/original/2021/08/star-wars-the-clone-wars-314602.jpg')}
-    #eraChoices [data-era="classic"]:before{background-image:url('https://www.wallpaperbetter.com/wallpaper/260/1001/280/darth-vader-star-wars-2K-wallpaper.jpg')}
-    #eraChoices [data-era="postempire"]:before{background-image:url('https://images.thedirect.com/media/article_full/mandalorian-season-4-release.jpg')}
-    #factionChoices [data-faction="jedi"]:before{background-image:url('https://66.media.tumblr.com/1bce43f1ff5ce32063fb41dbe3aa048e/tumblr_oo292pWB4x1wn3gsmo1_1280.jpg')}
+    #eraChoices [data-era="clonewars"]:before{background-image:url('https://cdn.wannart.com/production/post/2019/04/Star-Wars-The-Clone-Wars-wannagate.jpg')}
+    #eraChoices [data-era="classic"]:before{background-image:url('https://lumiere-a.akamaihd.net/v1/images/maul-shadow-lord-season-1-finale-darth-vader_9d1e251b.jpeg?region=238%2C0%2C1444%2C812')}
+    #eraChoices [data-era="postempire"]:before{background-image:url('https://w0.peakpx.com/wallpaper/78/449/HD-wallpaper-tv-show-the-mandalorian-ahsoka-tano-baby-yoda-bo-katan-kryze-boba-fett-cara-dune-cobb-vanth-fennec-shand-greef-karga-grogu-star-wars-kuiil-star-wars-luke-skywalker-moff-gideon-star-wars.jpg')}
+    #factionChoices [data-faction="jedi"]:before{background-image:url('https://cdn.wannart.com/production/post/2019/04/Star-Wars-The-Clone-Wars-wannagate.jpg')}
     #factionChoices [data-faction="sith"]:before{background-image:url('https://www.wallpaperbetter.com/wallpaper/260/1001/280/darth-vader-star-wars-2K-wallpaper.jpg')}
-    #factionChoices [data-faction="bounty"]:before{background-image:url('https://lumiere-a.akamaihd.net/v1/images/the-mandalorian-character-posters-bo-koska-axe_497yth4t_1c413e95.jpeg')}
+    #factionChoices [data-faction="bounty"]:before{background-image:url('https://lumiere-a.akamaihd.net/v1/images/boba-fett-main_a8fade4d.jpeg?region=203%2C34%2C1077%2C606')}
     .hub-factions .choice:hover:before{transform:scale(1.04)}
     .hub-factions .choice.active{border:2px solid var(--choice-color);box-shadow:0 0 13px color-mix(in srgb,var(--choice-color) 40%,transparent),inset 0 -45px 50px #02070dbd}
     .hub-factions .choice-mark{font-size:21px;color:var(--choice-color);text-shadow:0 0 12px var(--choice-color);margin-bottom:auto}
@@ -621,26 +621,54 @@
     }
     function hubPortrait(name){
       const portraits={
-        'Anakin Skywalker':'https://getwallpapers.com/wallpaper/full/1/4/b/402126.jpg',
-        'Ahsoka Tano':'https://1.bp.blogspot.com/-iAKBAT8Rm3I/V55n9kujgII/AAAAAAAAIJA/pg2ckbIAVYkV-Xosqr3vAA8slv2eMoqKgCLcB/s1600/tumblr_static_nsu1nv6p234cwokswc4gckww.png',
-        'Obi-Wan Kenobi':'https://i.pinimg.com/originals/a5/1d/53/a51d53a2f4bad4096c521acfbe3552b2.jpg',
-        'Yoda':'https://images.squarespace-cdn.com/content/v1/574bec3527d4bdfe229ea099/d0ef2b2a-082e-4ac1-b08e-bb030984f53e/yoda.jpg',
-        'Mace Windu':'https://m.media-amazon.com/images/M/MV5BZTAzYTM4MWItYWI0ZS00YTAyLTgwYTctZDU1YWU2MjJjNDBhXkEyXkFqcGc%40._V1_.jpg',
-        'Qui-Gon Jinn':'https://lumiere-a.akamaihd.net/v1/images/5cbdbc164c2d560001f78cdc-image_afe95642.jpeg?region=336%2C0%2C864%2C864&width=480',
-        'General Plo Koon':'https://res.cloudinary.com/jerrick/image/upload/v1654184119/6298d8b7e6e59c001e83f252.jpg',
-        'Capitã Rex':'https://res.cloudinary.com/jerrick/image/upload/v1653207507/6289f1d3a7e582001e85f22c.jpg',
-        'Capitão Rex':'https://res.cloudinary.com/jerrick/image/upload/v1653207507/6289f1d3a7e582001e85f22c.jpg',
-        'Rex':'https://res.cloudinary.com/jerrick/image/upload/v1653207507/6289f1d3a7e582001e85f22c.jpg',
-        'Aayla Secura':'https://imgix.ranker.com/user_node_img/50081/1001610394/original/aayla-secura-photo-u2?auto=format&dpr=2&fit=crop&fm=pjpg&q=60&w=500',
-        'Saesee Tiin':'https://imgix.ranker.com/user_node_img/50081/1001610718/original/saesee-tiin-photo-u2?auto=format&dpr=2&fit=crop&fm=pjpg&q=60&w=500',
-        'Darth Vader':'https://www.lucasfilm.com/app/uploads/EP4_KEY_18_R_gallery.jpg',
-        'Moff Gideon':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg',
-        'Bo-Katan Kryze':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg',
-        'Mando':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg'
+        'Anakin Skywalker':'https://lumiere-a.akamaihd.net/v1/images/anakin-skywalker-main_23e5105b.jpeg?region=387%2C27%2C1350%2C760',
+        'Ahsoka Tano':'https://lumiere-a.akamaihd.net/v1/images/ahsoka-main_88c206d7.jpeg?region=420%2C60%2C1500%2C843',
+        'Obi-Wan Kenobi':'https://lumiere-a.akamaihd.net/v1/images/obi-wan-kenobi-main_3286c63c.jpeg?region=0%2C0%2C1280%2C721',
+        'Yoda':'https://lumiere-a.akamaihd.net/v1/images/Yoda-Retina_2a7ecc26.jpeg?region=0%2C0%2C1536%2C864',
+        'Mace Windu':'https://lumiere-a.akamaihd.net/v1/images/Mace-Windu_b35242e5.jpeg?region=0%2C0%2C1637%2C921',
+        'Qui-Gon Jinn':'https://lumiere-a.akamaihd.net/v1/images/qui-gon-jinn-main_3386f119.jpeg?region=296%2C3%2C937%2C527',
+        'General Plo Koon':'https://lumiere-a.akamaihd.net/v1/images/databank_plokoon_01_169_92e6679c.jpeg?region=0%2C0%2C1560%2C878',
+        'Capitã Rex':'https://cdn.mos.cms.futurecdn.net/v2/t%3A0%2Cl%3A280%2Ccw%3A720%2Cch%3A720%2Cq%3A80%2Cw%3A720/sLVrqek7fEBDJiZcsL6uPA.jpeg',
+        'Capitão Rex':'https://cdn.mos.cms.futurecdn.net/v2/t%3A0%2Cl%3A280%2Ccw%3A720%2Cch%3A720%2Cq%3A80%2Cw%3A720/sLVrqek7fEBDJiZcsL6uPA.jpeg',
+        'Rex':'https://cdn.mos.cms.futurecdn.net/v2/t%3A0%2Cl%3A280%2Ccw%3A720%2Cch%3A720%2Cq%3A80%2Cw%3A720/sLVrqek7fEBDJiZcsL6uPA.jpeg',
+        'Aayla Secura':'https://neosabers.com/cdn/shop/articles/Aayla_Secura.jpg?v=1731387871&width=600',
+        'Saesee Tiin':'https://lumiere-a.akamaihd.net/v1/images/databank_saeseetiin_01_169_c9a8a41c.jpeg?region=0%2C0%2C1560%2C878',
+        'Conde Dookan':'https://lumiere-a.akamaihd.net/v1/images/Count-Dooku_4f552149.jpeg?region=0%2C0%2C1436%2C808',
+        'Count Dooku':'https://lumiere-a.akamaihd.net/v1/images/Count-Dooku_4f552149.jpeg?region=0%2C0%2C1436%2C808',
+        'General Grievous':'https://lumiere-a.akamaihd.net/v1/images/grievous-meets-anakin_f17a5f58.jpeg?region=803%2C86%2C686%2C687',
+        'Asajj Ventress':'https://m.media-amazon.com/images/M/MV5BNDMyNWYyOTktYTYzNC00N2JlLWE0NDktOTg4M2JkOGM5OGM4XkEyXkFqcGc%40._V1_.jpg',
+        'Darth Maul':'https://vignette.wikia.nocookie.net/battlefront/images/9/9f/Battlefront_II_%D0%B4%D0%B0%D1%80%D1%82_%D0%BC%D0%BE%D0%BB.jpg/revision/latest?cb=20171028193553&path-prefix=ru',
+        'Jango Fett':'https://wallpapercave.com/wp/wp8647479.jpg',
+        'Cad Bane':'https://www.babynamespedia.com/z-media/2023/09/cad-bane-13482453-0.png',
+        'Pre Vizsla':'https://lumiere-a.akamaihd.net/v1/images/databank_previzsla_01_169_3e74112a.jpeg?region=0%2C0%2C1560%2C878',
+        'Aura Sing':'https://lumiere-a.akamaihd.net/v1/images/databank_aurrasing_01_169_dce3aa30.jpeg?region=0%2C0%2C1560%2C878',
+        'Aurra Sing':'https://lumiere-a.akamaihd.net/v1/images/databank_aurrasing_01_169_dce3aa30.jpeg?region=0%2C0%2C1560%2C878',
+        'Luke Skywalker':'https://lumiere-a.akamaihd.net/v1/images/luke-skywalker-main_7ffe21c7.jpeg?region=130%2C147%2C1417%2C796',
+        'Han Solo e Chewbacca':'https://imgix.bustle.com/inverse/0a/f1/07/02/b1f2/428f/bb6c/7891359040b4/chewbacca-and-han-solo-in-star-wars.jpeg?crop=faces&fit=crop&fm=jpg&h=900&w=1200',
+        'Han Solo':'https://image.librewiki.net/9/9b/Hansoloprofile-1-.jpg',
+        'Leia Organa':'https://thestreetswalker.com/images/wcw_why_princess_leia_is_our_forever_beauty_crush.jpg',
+        'Darth Vader':'https://lumiere-a.akamaihd.net/v1/images/maul-shadow-lord-season-1-finale-darth-vader_9d1e251b.jpeg?region=238%2C0%2C1444%2C812',
+        'Imperador Palpatine':'https://movieplayer.net-cdn.it/t/images/2019/12/16/palpatine-star-wars_jpeg_1280x720_crop_q85.jpg',
+        'Boba Fett':'https://lumiere-a.akamaihd.net/v1/images/boba-fett-main_a8fade4d.jpeg?region=203%2C34%2C1077%2C606',
+        'Greedo':'https://lumiere-a.akamaihd.net/v1/images/databank_greedo_01_169_3e4b96ef.jpeg?region=0%2C0%2C1560%2C878',
+        'Bossk':'https://lumiere-a.akamaihd.net/v1/images/databank_bossk_01_169_c3c42fbe.jpeg?region=0%2C0%2C1560%2C878',
+        'Grand Moff Tarkin':'https://images.squarespace-cdn.com/content/v1/5fbc4a62c2150e62cfcb09aa/ac4a2647-e7a9-4a5d-bf02-e4de4c865100/tarkinyup%2B%281%29.png',
+        'Almirante Piett':'https://ik.imagekit.io/x2dirkim6/images/avatars/characters/character_avatar_mg1ZCWP3q.webp?tr=w-3840',
+        'General Veers':'https://lumiere-a.akamaihd.net/v1/images/image_105d40bc.jpeg?region=708%2C0%2C1094%2C819',
+        'Comando Imperial':'https://ik.imagekit.io/x2dirkim6/images/avatars/characters/character_avatar_mg1ZCWP3q.webp?tr=w-3840',
+        'Almirante Ackbar':'https://lumiere-a.akamaihd.net/v1/images/databank_ackbar_01_169_55137220.jpeg?region=0%2C0%2C1560%2C878',
+        'Mando':'https://images.squarespace-cdn.com/content/v1/5fbc4a62c2150e62cfcb09aa/7db40b6d-ee56-44dd-8b8a-51de85353e4b/dindaring.jpg',
+        'Bo-Katan Kryze':'https://lumiere-a.akamaihd.net/v1/images/katee-sackhoff-bo-katan-tall_6c4aa004.jpeg',
+        'Moff Gideon':'https://lumiere-a.akamaihd.net/v1/images/hckl_thumbnails_3840x2160_originals_episode7_10h_v1_71ee0b98.jpeg?region=453%2C0%2C900%2C900',
+        'Grande Almirante Thrawn':'https://deweb-519a7.b-cdn.net/post-images/881ab8f4-eb45-4a2b-9198-5ef94536f282.png',
+        'Thrawn':'https://deweb-519a7.b-cdn.net/post-images/881ab8f4-eb45-4a2b-9198-5ef94536f282.png',
+        'Fennec Shand':'https://media.vanityfair.com/photos/5dc04342fd0d8d0008c6a6e4/master/w_2560%2Cc_limit/Ming-Na-Wen-The-Mandalorian.jpg',
+        'Embo':'https://lumiere-a.akamaihd.net/v1/images/databank_embo_01_169_60b97902.jpeg?region=0%2C49%2C1560%2C780',
+        'Black Krrsantan':'https://www.slashfilm.com/img/gallery/how-carey-jones-work-on-predators-landed-him-the-role-of-black-krrsantan-in-the-book-of-boba-fett/l-intro-1671192358.jpg'
       };
-      return portraits[name]||'https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg';
+      return portraits[name] || portraits['Darth Vader'];
     }
-    function renderRosterChoices(){
+        function renderRosterChoices(){
       const config=activeEraFaction();
       const saved=selectedByEra[selectedEra+'_'+selectedFaction]||{};
       const champions=config.champions.map(([id,name])=>({id,name,role:'Champion · '+config.label,desc:'Disponível nesta era e facção.'}));
