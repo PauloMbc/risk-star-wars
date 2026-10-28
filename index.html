@@ -130,6 +130,90 @@
     @media(min-width:1000px){.setup-card.setup-hub{padding:20px 24px}.hub-loadout{grid-template-columns:1fr 1fr}}
     @media(max-width:650px){.setup-card.setup-hub{width:98vw;padding:12px 10px}.hub-heading{display:block}.hub-step{display:inline-block;margin-top:8px}.hub-factions .choice{min-height:120px}.hub-roster{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-person{min-height:132px}.hub-person .person-icon{font-size:25px}}
 
+
+    /* Hub em composição única, com a hierarquia visual da referência enviada */
+    .overlay#setupOverlay{padding:10px;align-items:center;overflow:auto}
+    .setup-card.setup-hub{position:relative;width:min(1600px,99vw);max-width:1600px;max-height:calc(100vh - 20px);overflow:auto;padding:12px;border-radius:4px;border:1px solid #7b5b28;background:radial-gradient(ellipse at 50% 0%,#142b3c 0%,#07111a 55%,#03070c 100%);box-shadow:0 0 0 1px #d8b65d18,0 30px 90px #000d}
+    .setup-hub:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;background-image:radial-gradient(1px 1px at 10% 17%,#d7ecff 1px,transparent 1.5px),radial-gradient(1px 1px at 84% 20%,#d7ecff 1px,transparent 1.5px),radial-gradient(1px 1px at 55% 79%,#d7ecff 1px,transparent 1.5px),radial-gradient(1px 1px at 24% 64%,#d7ecff 1px,transparent 1.5px);background-size:230px 170px;z-index:0}
+    .setup-hub>*{position:relative;z-index:1}
+    .hub-heading{grid-column:1/-1;padding:7px 10px 12px;border-bottom:1px solid #765b2b;align-items:center}
+    .hub-kicker{color:#f4c85f;font-size:10px;letter-spacing:2.5px}
+    .hub-title{font-size:clamp(21px,2.4vw,34px);line-height:1.08;letter-spacing:.5px;text-transform:uppercase;margin:6px 0}
+    .hub-title span{color:#f3c969}
+    .hub-sub{max-width:850px;font-size:11px;color:#b8c8d8}
+    .hub-step{border:1px solid #8e6d34;border-radius:3px;background:#101c28;color:#f6d889;font-weight:900;font-size:9px}
+    .hub-board{display:grid;grid-template-columns:.98fr .97fr 1.08fr 1.18fr;gap:10px;margin-top:10px;align-items:stretch}
+    .hub-panel{min-width:0;overflow:hidden;border:1px solid #80602a;background:linear-gradient(160deg,#07141deF,#07101aed);box-shadow:inset 0 0 24px #0008}
+    .hub-panel-title{padding:10px 10px 8px;text-align:center;color:#f4c65c;font-weight:950;font-size:clamp(10px,1vw,14px);letter-spacing:1px;border-bottom:1px solid #6a512c;background:linear-gradient(90deg,#09131e,#15283a,#09131e)}
+    .hub-panel .setup-stage,.hub-panel .setup-stage.hidden{display:block!important}
+    .hub-panel-copy{text-align:center;color:#bdcbd9;font-size:9px;line-height:1.45;padding:0 8px;margin:0 0 8px}
+    .hub-section-label{font-size:10px;letter-spacing:1.3px;color:#e4e9ef;text-align:center;margin:10px 5px 6px;padding:0;border:0}
+    .hub-factions{display:grid;gap:7px;margin:0;padding:7px}
+    .hub-era-cards,.hub-faction-cards{grid-template-columns:1fr}
+    .hub-factions .choice{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-height:105px;border:1px solid #485a6b;border-radius:2px;background:#0c1722;color:#eef6ff;padding:12px 11px;text-align:left;box-shadow:inset 0 -45px 50px #02070dbd;transition:border-color .16s,box-shadow .16s}
+    .hub-factions .choice:before{content:"";position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;opacity:.88;transition:transform .2s}
+    .hub-factions .choice:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#06101be8 0%,#08131c99 50%,#07111b22 100%),linear-gradient(0deg,#02060bd9 0%,transparent 100%);pointer-events:none}
+    #eraChoices [data-era="clonewars"]:before{background-image:url('https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg')}
+    #eraChoices [data-era="classic"]:before{background-image:url('https://www.lucasfilm.com/app/uploads/EP4_KEY_18_R_gallery.jpg')}
+    #eraChoices [data-era="postempire"]:before{background-image:url('https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg')}
+    #factionChoices [data-faction="jedi"]:before{background-image:url('https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg')}
+    #factionChoices [data-faction="sith"]:before{background-image:url('https://www.lucasfilm.com/app/uploads/EP4_KEY_18_R_gallery.jpg')}
+    #factionChoices [data-faction="bounty"]:before{background-image:url('https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg')}
+    .hub-factions .choice:hover:before{transform:scale(1.04)}
+    .hub-factions .choice.active{border:2px solid var(--choice-color);box-shadow:0 0 13px color-mix(in srgb,var(--choice-color) 40%,transparent),inset 0 -45px 50px #02070dbd}
+    .hub-factions .choice-mark{font-size:21px;color:var(--choice-color);text-shadow:0 0 12px var(--choice-color);margin-bottom:auto}
+    .hub-factions .choice-title{font-size:12px;line-height:1.2;text-transform:uppercase;margin-top:8px;color:#fff}
+    .hub-factions .choice-role{font-size:8px;letter-spacing:1px;margin-top:4px;color:var(--choice-color)}
+    .hub-factions .choice-desc{font-size:9px;line-height:1.38;color:#d0dae4;margin-top:5px}
+    .hub-back{border:1px solid #42566c;background:#0b1725;color:#9fb5cb;font-size:9px;width:calc(100% - 14px);margin:0 7px 8px;padding:7px;cursor:pointer}
+    .hub-board .hub-character-panel,.hub-board .hub-commander-panel{min-height:100%}
+    .hub-roster{padding:7px;gap:6px}
+    .hub-champions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start}
+    .hub-person{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-width:0;min-height:132px;padding:6px 6px 8px;border-radius:2px;border:1px solid #354d60;background:linear-gradient(145deg,#122638,#08111c);box-shadow:inset 0 -45px 45px #02060bd9}
+    .hub-person:before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse at 50% 10%,#5cc9ef55,transparent 57%);pointer-events:none}
+    .hub-person.active{border:2px solid #58dcff;box-shadow:0 0 13px #38caff4a,inset 0 -45px 45px #02060bd9}
+    .hub-person .person-art{position:absolute;z-index:-1;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;opacity:.86;mask-image:linear-gradient(to bottom,#000 0%,#000 58%,transparent 100%)}
+    .hub-person .person-icon{display:none}
+    .hub-person .person-name{font-size:clamp(8px,.8vw,10px);line-height:1.18;font-weight:950;text-align:center;text-transform:uppercase;text-shadow:0 1px 5px #000;margin-top:auto}
+    .hub-person .person-role{font-size:7px;color:#d7e7f5;text-align:center;letter-spacing:.6px;margin-top:4px}
+    .hub-person .person-desc{display:none}
+    .hub-commanders{display:grid;grid-template-columns:1fr;gap:6px}
+    .hub-commanders .hub-person{min-height:72px;padding:7px 8px 7px 78px;justify-content:center;text-align:left}
+    .hub-commanders .hub-person .person-art{width:66px;height:100%;right:auto;opacity:.9;mask-image:linear-gradient(to right,#000 0%,#000 75%,transparent 100%)}
+    .hub-commanders .hub-person .person-name{text-align:left;font-size:10px}
+    .hub-commanders .hub-person .person-role{text-align:left;color:#c0d1e1;font-size:8px}
+    .hub-commanders .hub-person .person-desc{display:block;font-size:8px;line-height:1.25;margin-top:3px;color:#9eb1c5}
+    .hub-bottom{display:grid;grid-template-columns: .97fr 1.03fr;gap:10px;margin-top:10px}
+    .hub-summary-panel{padding-bottom:10px}
+    .hub-summary-heading{text-align:center;font-size:clamp(16px,1.5vw,23px);margin:8px 5px 3px;color:#cfdae8;letter-spacing:.5px}
+    .hub-loadout{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px}
+    .hub-loadout-card{border-radius:2px;border:1px solid #34475a;background:#08121e;padding:8px}
+    .hub-loadout-title{font-size:9px;line-height:1.3;letter-spacing:.8px;color:#f3c969;margin-bottom:8px}
+    .hub-stat{grid-template-columns:60px 1fr 16px;gap:5px;font-size:8px;margin:7px 0}
+    .hub-bar{height:5px}
+    .hub-summary{display:flex;gap:5px;align-items:stretch;flex-wrap:wrap;padding:8px;margin:8px;border:1px solid #35465a;border-radius:2px;background:#091420;font-size:8px}
+    .hub-summary span{display:flex;flex-direction:column;flex:1 1 42%;gap:3px;padding:5px;border:1px solid #24354a;background:#0c1a29}
+    .hub-summary b{color:#70c9f2;font-size:9px}
+    .hub-start{margin:8px;width:calc(100% - 16px);border-radius:2px;background:linear-gradient(90deg,#102d18,#28642c,#102d18);border:1px solid #58b858;color:#d8ffd0;box-shadow:0 0 16px #52c45122;padding:13px;font-size:11px}
+    .hub-back-bottom{width:calc(100% - 16px);margin:0 8px;padding:9px}
+    .hub-map-title{text-align:center;color:#cbd8e5;font-size:12px;letter-spacing:1px;padding:10px 7px;border-bottom:1px solid #304459}
+    .hub-galaxy-scene{position:relative;overflow:hidden;min-height:260px;height:calc(100% - 36px);background:radial-gradient(ellipse at 50% 54%,#1b5c6f 0%,#16374b 24%,#071827 55%,#040b14 100%);isolation:isolate}
+    .hub-galaxy-scene:before{content:"";position:absolute;inset:5% 8%;border-radius:50%;background:radial-gradient(ellipse at 50% 45%,#7b9d72 0%,#365d58 21%,#183e4d 45%,#0a1e31 70%);box-shadow:0 0 65px #4bafe85c,inset -18px -14px 32px #020812}
+    .hub-galaxy-globe{position:absolute;left:22%;top:10%;width:58%;height:75%;border-radius:50%;background:repeating-linear-gradient(24deg,transparent 0 9px,#c3d5a117 10px 12px),radial-gradient(ellipse at 40% 34%,#729b76 0 12%,transparent 13%),radial-gradient(ellipse at 62% 54%,#7c916c 0 9%,transparent 10%),radial-gradient(ellipse at 28% 70%,#527d76 0 13%,transparent 14%);filter:drop-shadow(0 0 18px #4dc8ff35)}
+    .hub-orbit{position:absolute;left:13%;top:20%;width:74%;height:62%;border:1px solid #56a8d34a;border-radius:50%;transform:rotate(-23deg)}
+    .hub-orbit.o2{left:22%;top:8%;width:57%;height:82%;transform:rotate(52deg);border-color:#f6d27940}
+    .hub-node{position:absolute;display:grid;place-items:center;width:16px;height:16px;border:1px solid #bcdff0;border-radius:50%;background:radial-gradient(circle,#f5f4d1,#2c7699 55%,#071420);color:#fff;box-shadow:0 0 12px #80dcff88;font-size:8px}
+    .n1{left:28%;top:33%}.n2{left:43%;top:20%}.n3{left:65%;top:29%}.n4{left:54%;top:46%}.n5{left:33%;top:61%}.n6{left:72%;top:66%}.n7{left:48%;top:78%}.n8{left:80%;top:43%}
+    .hub-capital{position:absolute;left:45%;top:46%;transform:translate(-10%,-50%);border:1px solid #d4b15d;background:#101c27eF;padding:6px 8px;text-align:center;font-size:8px;color:#ffdf8a;letter-spacing:.7px;box-shadow:0 0 15px #ffda6a55}
+    .hub-capital small{font-size:6px;color:#c9d3df}
+    .hub-map-notes{position:absolute;left:10px;bottom:13px;display:grid;gap:8px;color:#d0dfed;font-size:8px;text-shadow:0 1px 4px #000}
+    .hub-ship{position:absolute;color:#d9e3e9;font-size:10px;text-shadow:0 0 10px #fff;opacity:.9}
+    .ship-a{right:6%;top:17%;transform:rotate(-12deg)}.ship-b{left:23%;bottom:7%;transform:rotate(8deg)}
+    .hub-foot{grid-column:1/-1;color:#8298ad;font-size:8px;text-align:center;margin-top:8px;border-top:1px solid #283d50;padding-top:8px}
+    @media(min-width:1000px){.setup-card.setup-hub{display:block}.hub-board{display:grid}.hub-panel .setup-stage.hidden{display:block!important}.hub-factions .choice.active{border-color:var(--choice-color)}}
+    @media(max-width:999px){.setup-card.setup-hub{width:98vw;max-height:96vh;padding:10px}.hub-board{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-era-panel,.hub-faction-panel{min-height:100%}.hub-bottom{grid-template-columns:1fr 1fr}.hub-roster{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-commanders{grid-template-columns:1fr}.hub-person{min-height:120px}}
+    @media(max-width:640px){.overlay#setupOverlay{padding:5px}.setup-card.setup-hub{width:100%;max-height:98vh;padding:7px}.hub-heading{display:block;padding:5px}.hub-title{font-size:21px}.hub-step{display:inline-block;margin-top:7px}.hub-board{grid-template-columns:1fr;gap:7px}.hub-factions .choice{min-height:100px}.hub-champions{grid-template-columns:repeat(3,minmax(0,1fr))}.hub-person{min-height:125px}.hub-commanders .hub-person{min-height:66px}.hub-bottom{grid-template-columns:1fr}.hub-loadout{grid-template-columns:1fr 1fr}.hub-galaxy-scene{min-height:240px}.hub-map-title{font-size:10px}}
+
   </style>
 </head>
 <body>
@@ -239,16 +323,42 @@
 
   <div class="overlay" id="setupOverlay">
     <div class="setup-card setup-hub">
-      <div class="hub-heading"><div><div class="hub-kicker">RISK STAR WARS · CAMPANHA GALÁCTICA</div><div class="hub-title">Escolha seu <span>destino.</span></div><p class="hub-sub">Prepare a campanha em etapas: era, facção, campeão e comandante.</p></div><div class="hub-step" id="setupStepLabel">01 / 04 · ERA</div></div>
-      <div class="setup-stage" id="eraStage"><div class="hub-section-label">01 — ESCOLHA A ERA</div><div class="faction-choice hub-factions" id="eraChoices"></div></div>
-      <div class="setup-stage hidden" id="factionStage"><div class="hub-section-label">02 — ESCOLHA A FACÇÃO DESTA ERA</div><div class="faction-choice hub-factions" id="factionChoices"></div><button class="launch-btn hub-start" id="backToEraBtn" type="button">← VOLTAR ÀS ERAS</button></div>
-      <div class="setup-stage hidden" id="rosterStage">
-        <div class="hub-section-label">03 — ESCOLHA SEU CHAMPION</div><div class="hub-roster" id="championChoices"></div>
-        <div class="hub-section-label">04 — ESCOLHA SEU COMANDANTE</div><div class="hub-roster" id="commanderChoices"></div>
-        <div class="hub-loadout"><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS DO CHAMPION</div><div id="championStats"></div></div><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS DO COMANDANTE</div><div id="commanderStats"></div></div></div>
-        <div class="hub-summary" id="loadoutSummary"></div>
-        <button class="launch-btn hub-start" id="startBtn" type="button">✦ CONFIRMAR E INICIAR PARTIDA</button>
-        <button class="launch-btn hub-start" id="backToFactionBtn" type="button">← VOLTAR ÀS FACÇÕES</button>
+      <div class="hub-heading"><div><div class="hub-kicker">RISK STAR WARS · CAMPANHA GALÁCTICA</div><div class="hub-title">PREPARE-SE PARA A <span>CONQUISTA DA GALÁXIA</span></div><p class="hub-sub">Escolha sua era, sua facção, seu Champion e seu Comandante. Sua combinação define o estilo da campanha.</p></div><div class="hub-step" id="setupStepLabel">01–04 · CONFIGURAÇÃO</div></div>
+      <div class="hub-board">
+        <section class="hub-panel hub-era-panel">
+          <div class="hub-panel-title">1. HUB DE ERAS</div>
+          <div class="setup-stage" id="eraStage"><div class="hub-section-label">ESCOLHA A ERA</div><div class="hub-panel-copy">Cada era possui heróis, facções e desafios únicos.</div><div class="faction-choice hub-factions hub-era-cards" id="eraChoices"></div></div>
+        </section>
+        <section class="hub-panel hub-faction-panel">
+          <div class="hub-panel-title">2. HUB DE FACÇÕES</div>
+          <div class="setup-stage" id="factionStage"><div class="hub-section-label">ESCOLHA SUA FACÇÃO</div><div class="hub-panel-copy">Cada facção possui estilo de jogo e bônus únicos.</div><div class="faction-choice hub-factions hub-faction-cards" id="factionChoices"></div><button class="hub-back" id="backToEraBtn" type="button">← VOLTAR ÀS ERAS</button></div>
+        </section>
+        <section class="hub-panel hub-character-panel">
+          <div class="hub-panel-title">3. SELEÇÃO DE CHAMPIONS</div>
+          <div class="hub-section-label">ESCOLHA SEU CHAMPION</div><div class="hub-panel-copy">Seu Champion será a força principal da sua jornada.</div><div class="hub-roster hub-champions" id="championChoices"></div>
+        </section>
+        <section class="hub-panel hub-commander-panel">
+          <div class="hub-panel-title">4. SELEÇÃO DE COMANDANTES</div>
+          <div class="hub-section-label">ESCOLHA SEU COMANDANTE</div><div class="hub-panel-copy">Seu Comandante define a doutrina e os bônus do seu exército.</div><div class="hub-roster hub-commanders" id="commanderChoices"></div>
+        </section>
+      </div>
+      <div class="hub-bottom">
+        <section class="hub-panel hub-summary-panel">
+          <div class="hub-panel-title">5. RESUMO DA ESCOLHA</div><h2 class="hub-summary-heading">CONFIRME SUA ESCOLHA</h2><p class="hub-panel-copy">Revise suas escolhas antes de iniciar sua jornada pela galáxia.</p>
+          <div class="hub-loadout"><div class="hub-loadout-card"><div class="hub-loadout-title">BÔNUS FINAIS · CHAMPION</div><div id="championStats"></div></div><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS · COMANDANTE</div><div id="commanderStats"></div></div></div>
+          <div class="hub-summary" id="loadoutSummary"></div>
+          <button class="launch-btn hub-start" id="startBtn" type="button">✦ INICIAR PARTIDA · QUE A FORÇA ESTEJA COM VOCÊ!</button>
+          <button class="hub-back hub-back-bottom" id="backToFactionBtn" type="button">← VOLTAR ÀS FACÇÕES</button>
+        </section>
+        <section class="hub-panel hub-galaxy-panel">
+          <div class="hub-map-title">PREPARE-SE PARA A CONQUISTA DA GALÁXIA</div>
+          <div class="hub-galaxy-scene"><div class="hub-galaxy-globe"></div>
+            <div class="hub-orbit o1"></div><div class="hub-orbit o2"></div>
+            <span class="hub-node n1">✦</span><span class="hub-node n2">◈</span><span class="hub-node n3">✦</span><span class="hub-node n4">◉</span><span class="hub-node n5">✦</span><span class="hub-node n6">◈</span><span class="hub-node n7">✦</span><span class="hub-node n8">◉</span><span class="hub-capital">CORUSCANT<br><small>CAPITAL</small></span>
+            <div class="hub-map-notes"><span>✧ Expanda seus territórios</span><span>✧ Comande heróis e exércitos</span><span>✧ Construa sua frota</span><span>✧ Domine a galáxia</span></div>
+            <div class="hub-ship ship-a">◢━━━━━━━━</div><div class="hub-ship ship-b">━━━━━━◣</div>
+          </div>
+        </section>
       </div>
       <div class="hub-foot">Champions e comandantes começam na capital. Para levá-los a outros planetas, será necessário transportá-los por naves.</div>
     </div>
@@ -337,6 +447,8 @@
 
     function init(){
       renderChoices();
+      renderFactionChoices();
+      renderRosterChoices();
       $('startBtn').addEventListener('click',startCampaign);
       $('backToEraBtn').addEventListener('click',()=>showSetupStage('era'));
       $('backToFactionBtn').addEventListener('click',()=>showSetupStage('faction'));
@@ -358,7 +470,7 @@
 
     const eraConfigs = {
       clonewars:{name:'Clone Wars',subtitle:'A República, a Confederação e os caçadores',factions:[
-        {id:'jedi',label:'República',source:'Republica',champions:[['obiwan','Obi-Wan Kenobi'],['anakin','Anakin Skywalker'],['mace','Mace Windu']],commanders:[['cody','Cody'],['rex','Rex'],['ahsoka','Ahsoka Tano']]},
+        {id:'jedi',label:'República',source:'República Galáctica',champions:[['anakin','Anakin Skywalker'],['ahsoka','Ahsoka Tano'],['obiwan','Obi-Wan Kenobi'],['yoda','Yoda'],['mace','Mace Windu'],['quigon','Qui-Gon Jinn']],commanders:[['plo','General Plo Koon'],['rex','Capitã Rex'],['aayla','Aayla Secura'],['saesee','Saesee Tiin']]},
         {id:'sith',label:'Confederação',source:'Confederação',champions:[['dooku','Conde Dookan'],['grievous','General Grievous'],['ventress','Asajj Ventress']],commanders:[['grievous_cmd','General Grievous'],['ventress_cmd','Asajj Ventress'],['dooku_cmd','Conde Dookan']]},
         {id:'bounty',label:'Caçadores de Recompensas',source:'Caçadores de Recompensa',champions:[['maul_bounty','Darth Maul'],['jango','Jango Fett'],['cadbane','Cad Bane'],['previzsla','Pre Vizsla'],['aurasing','Aura Sing']],commanders:[['jango_cmd','Jango Fett'],['cadbane_cmd','Cad Bane'],['previzsla_cmd','Pre Vizsla']]}
       ]},
@@ -373,7 +485,7 @@
         {id:'bounty',label:'Caçadores de Recompensas',source:'Caçadores de recompensas',champions:[['fennec','Fennec Shand'],['embo','Embo'],['krrsantan','Black Krrsantan']],commanders:[['fennec_cmd','Fennec Shand'],['embo_cmd','Embo'],['krrsantan_cmd','Black Krrsantan']]}
       ]}
     };
-    let selectedByEra = {};
+    let selectedByEra = {'clonewars_jedi':{champion:'obiwan',commander:'plo'}};
     function activeEra(){return eraConfigs[selectedEra];}
     function activeEraFaction(){return activeEra().factions.find(f=>f.id===selectedFaction)||activeEra().factions[0];}
     function showSetupStage(stage){
@@ -394,6 +506,26 @@
       const era=activeEra();
       $('factionChoices').innerHTML=era.factions.map(f=>{const base=factions[f.id];return '<button type="button" class="choice '+(f.id===selectedFaction?'active':'')+'" data-faction="'+f.id+'" style="--choice-color:'+base.color+'"><div class="choice-mark">'+base.mark+'</div><div class="choice-title">'+f.label+'</div><div class="choice-role">'+f.source.toUpperCase()+'</div><div class="choice-desc">'+(f.id==='jedi'?'Liderança, defesa e resistência.':f.id==='sith'?'Pressão militar e domínio ofensivo.':'Contratos, dinheiro e operações especiais.')+'</div></button>';}).join('');
       $('factionChoices').querySelectorAll('[data-faction]').forEach(b=>b.addEventListener('click',()=>{selectedFaction=b.dataset.faction;showSetupStage('roster');}));
+    }
+    function hubPortrait(name){
+      const portraits={
+        'Anakin Skywalker':'https://www.looper.com/img/gallery/the-untold-truth-of-ahsoka-tano/be-a-padawan-not-a-padawont-1584131265.jpg',
+        'Ahsoka Tano':'https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg',
+        'Obi-Wan Kenobi':'https://miro.medium.com/v2/1%2ACAC9sqCxEjsAoV-k6YRcYw.jpeg',
+        'Yoda':'https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg',
+        'Mace Windu':'https://gizmodo.com/app/uploads/2020/04/nw6sx4xr3r77ssllmanl.jpg',
+        'Qui-Gon Jinn':'https://miro.medium.com/v2/1%2ACAC9sqCxEjsAoV-k6YRcYw.jpeg',
+        'General Plo Koon':'https://res.cloudinary.com/jerrick/image/upload/v1654184119/6298d8b7e6e59c001e83f252.jpg',
+        'Capitã Rex':'https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg',
+        'Rex':'https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg',
+        'Aayla Secura':'https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg',
+        'Saesee Tiin':'https://res.cloudinary.com/jerrick/image/upload/v1654184119/6298d8b7e6e59c001e83f252.jpg',
+        'Darth Vader':'https://www.lucasfilm.com/app/uploads/EP4_KEY_18_R_gallery.jpg',
+        'Moff Gideon':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg',
+        'Bo-Katan Kryze':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg',
+        'Mando':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg'
+      };
+      return portraits[name]||'https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg';
     }
     function renderRosterChoices(){
       const config=activeEraFaction();
