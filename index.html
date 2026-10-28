@@ -997,6 +997,7 @@
       conquestsThisRound=0;
       Object.keys(diplomacyPacts).forEach(id=>{if(round>diplomacyPacts[id].untilRound)delete diplomacyPacts[id];});
       Object.keys(espionageReports).forEach(id=>{if(round-espionageReports[id].round>2)delete espionageReports[id];});
+      Object.keys(sabotageOrders).forEach(id=>{if(sabotageOrders[id].round<round)delete sabotageOrders[id];});
       const previous=currentGalacticEvent&&currentGalacticEvent.id;
       let pool=galacticEvents.filter(e=>e.id!==previous);
       currentGalacticEvent={...pool[Math.floor(Math.random()*pool.length)]};
@@ -1038,6 +1039,7 @@
           addLog('★','Objetivo especial concluído',currentObjective.name+' · recompensa: '+currentObjective.rewardText+'.');
           $('objectiveName').textContent=currentObjective.name+' · CONCLUÍDO';
           $('objectiveProgress').textContent='Recompensa recebida: '+currentObjective.rewardText;
+          render();
         }
       }else{
         $('objectiveName').textContent='Aguardando a campanha';
