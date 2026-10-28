@@ -174,6 +174,24 @@
           <div class="intel-stat"><label>VALOR ECONÔMICO</label><strong id="intelIncome">—</strong></div>
         </div>
       </section>
+      <section class="panel action-area" id="heroPanel">
+        <div class="eyebrow">Fase 2 · Heróis e frota</div>
+        <div class="panel-title" style="margin:6px 0 12px">Comando especial</div>
+        <div class="intel-desc" id="heroStatus">Escolha uma facção para mobilizar seu campeão.</div>
+        <label class="section-label" for="heroDestination" style="display:block;margin-top:12px">Destino do campeão</label>
+        <select id="heroDestination" style="width:100%;padding:10px;background:#0b1220;color:#e9f0fb;border:1px solid #34425b;border-radius:8px;margin-bottom:8px"></select>
+        <label class="section-label" for="shipType" style="display:block;margin-top:8px">Transporte</label>
+        <select id="shipType" style="width:100%;padding:10px;background:#0b1220;color:#e9f0fb;border:1px solid #34425b;border-radius:8px;margin-bottom:8px">
+          <option value="shuttle">Lançadeira · 2 créditos · 1 rota</option>
+          <option value="cruiser">Cruzador · 5 créditos · até 2 rotas</option>
+        </select>
+        <div class="action-stack" style="margin-top:8px">
+          <button class="secondary-btn" id="moveHeroBtn" type="button" disabled>🚀 Transportar campeão</button>
+          <button class="secondary-btn" id="buyShipBtn" type="button" disabled>＋ Comprar lançadeira · 2 créditos</button>
+          <button class="danger-btn" id="spaceAttackBtn" type="button" disabled>☄ Bombardeio orbital · 1 nave</button>
+        </div>
+        <p class="hint" id="fleetStatus">Naves permitem transportar seu campeão e apoiar batalhas terrestres.</p>
+      </section>
       <section class="panel action-area">
         <div class="section-label">Ações de comando</div>
         <div class="action-stack">
@@ -246,6 +264,13 @@
     let started = false;
     let gameOver = false;
     let logs = [];
+    const heroes = {
+      jedi:{name:"Cavaleiro Jedi",mark:"✧",ability:"Guardião: +1 na defesa; recupera 1 tropa no início do turno se estiver em planeta aliado."},
+      sith:{name:"Lorde Sith",mark:"✹",ability:"Fúria: +1 adicional no ataque terrestre quando lidera a ofensiva."},
+      bounty:{name:"Caçador lendário",mark:"✦",ability:"Especialista: recebe +2 créditos extras ao conquistar um planeta."}
+    };
+    let heroLocations = {jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
+    let fleet = {jedi:1,sith:1,bounty:1};
     let toastTimer = null;
     const $ = id => document.getElementById(id);
     const factionIds = ['jedi','sith','bounty'];
@@ -261,6 +286,10 @@
       $('attackBtn').addEventListener('click',attackSelected);
       $('clearTargetBtn').addEventListener('click',clearTarget);
       $('endTurnBtn').addEventListener('click',endTurn);
+      $('moveHeroBtn').addEventListener('click',moveHero);
+      $('buyShipBtn').addEventListener('click',buyShip);
+      $('spaceAttackBtn').addEventListener('click',spaceAttack);
+      $('shipType').addEventListener('change',renderPhaseTwo);
       render();
     }
 
@@ -280,6 +309,8 @@
       planets=initialPlanets.map(p=>({...p}));
       currentFaction=humanFaction; round=1; reinforcements=0;
       credits={jedi:factions.jedi.credits,sith:factions.sith.credits,bounty:factions.bounty.credits};
+      heroLocations={jedi:"coruscant",sith:"korriban",bounty:"nalhutta"};
+      fleet={jedi:1,sith:1,bounty:1};
       selectedPlanetId=capitalId(humanFaction); targetPlanetId=null; mercenaryUsed=false; started=true; gameOver=false; logs=[];
       $('setupOverlay').classList.add('hidden');
       addLog('✦','Campanha iniciada',factions[humanFaction].name+' entrou na disputa pela galáxia.');
@@ -380,6 +411,7 @@
         return '<div class="faction-row" style="border-color:'+(id===humanFaction&&started?f.color+'80':'#253149')+'"><div class="faction-sigil" style="color:'+f.color+';background:'+f.color+'18">'+f.mark+'</div><div style="min-width:0"><div class="name">'+f.short+(id===humanFaction&&started?' · VOCÊ':'')+'</div><div class="desc">'+count+' planetas · '+troops+' tropas</div></div><div class="count" style="color:'+f.color+'">'+count+'</div></div>';
       }).join('');
       renderIntel();
+      renderPhaseTwo();
       const selected=planet(selectedPlanetId);
       const target=planet(targetPlanetId);
       const sourceOk=started&&!gameOver&&currentFaction===humanFaction&&selected&&selected.owner===humanFaction;
@@ -428,6 +460,7 @@
       reinforcements=calcReinforcements(humanFaction);
       mercenaryUsed=false;
       credits[humanFaction]+=ownedPlanets(humanFaction).reduce((sum,p)=>sum+p.income,0);
+      if(humanFaction==="jedi"&&planet(heroLocations.jedi)?.owner==="jedi")planet(heroLocations.jedi).troops+=1;
       addLog('◈','Rodada '+round,'Reforços disponíveis: '+reinforcements+'. Créditos arrecadados nos planetas controlados.');
       render();
     }
@@ -448,6 +481,53 @@
     }
     function clearTarget(){targetPlanetId=null;render();}
 
+    function distanceWithin(fromId,toId,maxHops){
+      if(fromId===toId)return true;
+      let frontier=[fromId],seen=new Set(frontier);
+      for(let step=0;step<maxHops;step++){
+        const next=[];
+        for(const id of frontier){const p=planet(id);for(const n of (p?p.links:[])){if(n===toId)return true;if(!seen.has(n)){seen.add(n);next.push(n);}}}
+        frontier=next;
+      }
+      return false;
+    }
+    function renderPhaseTwo(){
+      const loc=planet(heroLocations[humanFaction]);
+      const destSelect=$('heroDestination');
+      const oldValue=destSelect.value;
+      destSelect.innerHTML=ownedPlanets(humanFaction).map(p=>'<option value="'+p.id+'">'+p.name+'</option>').join('');
+      if(ownedPlanets(humanFaction).some(p=>p.id===oldValue))destSelect.value=oldValue;
+      const dest=planet(destSelect.value),cruiser=$('shipType').value==='cruiser',cost=cruiser?5:2;
+      $('heroStatus').textContent=started?heroes[humanFaction].mark+' '+heroes[humanFaction].name+' · posição: '+(loc?loc.name:'nenhuma')+'. '+heroes[humanFaction].ability:'Escolha uma facção para mobilizar seu campeão.';
+      $('moveHeroBtn').disabled=!(started&&!gameOver&&currentFaction===humanFaction&&loc&&dest&&dest.id!==loc.id&&distanceWithin(loc.id,dest.id,cruiser?2:1)&&fleet[humanFaction]>0&&credits[humanFaction]>=cost);
+      $('moveHeroBtn').textContent='🚀 Transportar campeão · '+cost+' créditos';
+      $('buyShipBtn').disabled=!(started&&!gameOver&&currentFaction===humanFaction&&credits[humanFaction]>=2);
+      $('fleetStatus').textContent='Frota disponível: '+(fleet[humanFaction]||0)+' nave(s). Cruzador alcança até 2 rotas, mas custa 5 créditos.';
+      const src=planet(selectedPlanetId),tgt=planet(targetPlanetId);
+      $('spaceAttackBtn').disabled=!(started&&!gameOver&&currentFaction===humanFaction&&src&&tgt&&src.owner===humanFaction&&tgt.owner!==humanFaction&&src.links.includes(tgt.id)&&fleet[humanFaction]>0&&credits[humanFaction]>=1);
+    }
+    function moveHero(){
+      const origin=planet(heroLocations[humanFaction]),dest=planet($('heroDestination').value);
+      const cruiser=$('shipType').value==='cruiser',cost=cruiser?5:2;
+      if(!origin||!dest||dest.owner!==humanFaction||dest.id===origin.id||!distanceWithin(origin.id,dest.id,cruiser?2:1)||fleet[humanFaction]<1||credits[humanFaction]<cost)return;
+      credits[humanFaction]-=cost;heroLocations[humanFaction]=dest.id;fleet[humanFaction]--;
+      addLog('🚀','Campeão transportado',heroes[humanFaction].name+' chegou a '+dest.name+'.');render();showToast('Campeão chegou a '+dest.name+'.');
+    }
+    function buyShip(){
+      if(!started||gameOver||currentFaction!==humanFaction||credits[humanFaction]<2)return;
+      credits[humanFaction]-=2;fleet[humanFaction]++;
+      addLog('🚀','Nave adicionada à frota','Uma lançadeira foi preparada.');render();showToast('Lançadeira comprada.');
+    }
+    function spaceAttack(){
+      const src=planet(selectedPlanetId),tgt=planet(targetPlanetId);
+      if(!src||!tgt||src.owner!==humanFaction||tgt.owner===humanFaction||!src.links.includes(tgt.id)||fleet[humanFaction]<1||credits[humanFaction]<1)return;
+      fleet[humanFaction]--;credits[humanFaction]--;
+      const damage=1+Math.floor(Math.random()*2);tgt.troops=Math.max(0,tgt.troops-damage);
+      addLog('☄','Bombardeio orbital',src.name+' atingiu '+tgt.name+' e eliminou '+damage+' tropa(s).');
+      if(tgt.troops===0){const old=tgt.owner;tgt.owner=humanFaction;tgt.troops=1;credits[humanFaction]+=humanFaction==='bounty'?3:1;addLog('⚔','Planeta conquistado após bombardeio',tgt.name+' foi ocupado'+(old?' após expulsar '+factions[old].name:'')+'.');targetPlanetId=null;checkVictory();}
+      render();showToast('Bombardeio concluído. Uma nave foi consumida.');
+    }
+
     function rollDice(count,modifier){
       const values=[];
       for(let i=0;i<count;i++)values.push(Math.min(6,1+Math.floor(Math.random()*6)+(modifier||0)));
@@ -457,8 +537,8 @@
       const attackerCount=Math.min(3,source.troops-1);
       const defenderCount=Math.min(2,target.troops);
       if(attackerCount<1||defenderCount<1)return {ok:false,captured:false};
-      const attackMod=attackerFaction==='sith'?1:0;
-      const defendMod=target.owner==='jedi'?1:0;
+      const attackMod=(attackerFaction==='sith'?1:0)+(attackerFaction==='sith'&&heroLocations.sith===source.id?1:0);
+      const defendMod=(target.owner==='jedi'?1:0)+(target.owner==='jedi'&&heroLocations.jedi===target.id?1:0);
       const attackDice=rollDice(attackerCount,attackMod);
       const defendDice=rollDice(defenderCount,defendMod);
       let attackerLoss=0,defenderLoss=0;
