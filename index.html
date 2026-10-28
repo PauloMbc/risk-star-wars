@@ -156,7 +156,7 @@
     #eraChoices [data-era="clonewars"]:before{background-image:url('https://img.netzwelt.de/dw1200_dh675_sw0_sh0_sx0_sy0_sr16x9_nu0/picture/original/2021/08/star-wars-the-clone-wars-314602.jpg')}
     #eraChoices [data-era="classic"]:before{background-image:url('https://www.wallpaperbetter.com/wallpaper/260/1001/280/darth-vader-star-wars-2K-wallpaper.jpg')}
     #eraChoices [data-era="postempire"]:before{background-image:url('https://images.thedirect.com/media/article_full/mandalorian-season-4-release.jpg')}
-    #factionChoices [data-faction="jedi"]:before{background-image:url('https://wall.alphacoders.com/big.php?i=796656')}
+    #factionChoices [data-faction="jedi"]:before{background-image:url('https://66.media.tumblr.com/1bce43f1ff5ce32063fb41dbe3aa048e/tumblr_oo292pWB4x1wn3gsmo1_1280.jpg')}
     #factionChoices [data-faction="sith"]:before{background-image:url('https://www.wallpaperbetter.com/wallpaper/260/1001/280/darth-vader-star-wars-2K-wallpaper.jpg')}
     #factionChoices [data-faction="bounty"]:before{background-image:url('https://lumiere-a.akamaihd.net/v1/images/the-mandalorian-character-posters-bo-koska-axe_497yth4t_1c413e95.jpeg')}
     .hub-factions .choice:hover:before{transform:scale(1.04)}
@@ -231,6 +231,22 @@
     .hub-galaxy-scene:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 12% 21%,#d9f1ff 1px,transparent 2px),radial-gradient(1px 1px at 83% 11%,#d9f1ff 1px,transparent 2px),radial-gradient(1px 1px at 92% 65%,#d9f1ff 1px,transparent 2px),radial-gradient(1px 1px at 7% 82%,#d9f1ff 1px,transparent 2px);opacity:.65}
     @media(max-width:999px){.hub-summary-grid{grid-template-columns:1fr}.hub-selected-list{grid-template-columns:1fr 1fr}.hub-loadout-card{min-width:0}}
     @media(max-width:640px){.hub-summary-grid{grid-template-columns:1fr}.hub-selected-list{grid-template-columns:1fr 1fr}.hub-loadout{grid-template-columns:1fr 1fr}.hub-selected-row{min-height:40px}.hub-selected-icon{width:26px;height:26px;flex-basis:26px}}
+
+
+    .hub-commanders .hub-person{display:grid;grid-template-columns:58px minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:8px;align-items:center;padding:6px 7px 6px 7px;min-height:86px}
+    .hub-commanders .hub-person .person-art{grid-column:1;grid-row:1/4;position:absolute;left:0;top:0;right:auto;width:58px;height:100%;object-fit:cover;object-position:center 25%;mask-image:linear-gradient(to right,#000 0%,#000 72%,transparent 100%)}
+    .hub-commanders .hub-person .person-icon{display:none}
+    .hub-commanders .hub-person .person-name{grid-column:2;grid-row:1;text-align:left;font-size:9px;align-self:end}
+    .hub-commanders .hub-person .person-role{grid-column:2;grid-row:2;text-align:left;font-size:7px;margin-top:2px}
+    .hub-commanders .hub-person .person-desc{display:none}
+    .commander-mini-stats{grid-column:2;grid-row:3;display:grid;gap:3px;align-self:center;width:100%;margin-top:4px}
+    .commander-mini-row{display:grid;grid-template-columns:45px minmax(0,1fr) 12px;align-items:center;gap:4px;font-size:6px;color:#b8c6d5;line-height:1}
+    .commander-mini-row i{display:block;height:5px;overflow:hidden;background:#15293a;border-radius:1px}
+    .commander-mini-row i b{display:block;height:100%;border-radius:1px}
+    .commander-mini-row strong{font-size:7px;text-align:right;color:#f0d58b}
+    .hub-champions .hub-person.active:after{content:"✓";position:absolute;top:4px;right:4px;width:16px;height:16px;display:grid;place-items:center;background:#12394b;border:1px solid #6bdfff;border-radius:50%;color:#a8f0ff;font-size:11px;font-weight:900}
+    @media(max-width:999px){.hub-commanders .hub-person{min-height:100px;grid-template-columns:55px minmax(0,1fr)}.commander-mini-row{grid-template-columns:42px minmax(0,1fr) 11px}}
+    @media(max-width:640px){.hub-commanders .hub-person{min-height:96px}.commander-mini-row{font-size:6px;grid-template-columns:45px minmax(0,1fr) 11px}}
 
   </style>
 </head>
@@ -526,6 +542,32 @@
       $('factionChoices').innerHTML=era.factions.map(f=>{const base=factions[f.id];return '<button type="button" class="choice '+(f.id===selectedFaction?'active':'')+'" data-faction="'+f.id+'" style="--choice-color:'+base.color+'"><div class="choice-mark">'+base.mark+'</div><div class="choice-title">'+f.label+'</div><div class="choice-role">'+f.source.toUpperCase()+'</div><div class="choice-desc">'+(f.id==='jedi'?'Liderança, defesa e resistência.':f.id==='sith'?'Pressão militar e domínio ofensivo.':'Contratos, dinheiro e operações especiais.')+'</div></button>';}).join('');
       $('factionChoices').querySelectorAll('[data-faction]').forEach(b=>b.addEventListener('click',()=>{selectedFaction=b.dataset.faction;renderFactionChoices();showSetupStage('roster');}));
     }
+    function commanderBonus(name,index){
+      const profiles={
+        'General Plo Koon':{attack:0,defense:2,economy:0,mobility:1},
+        'Capitã Rex':{attack:2,defense:1,economy:0,mobility:1},
+        'Capitão Rex':{attack:2,defense:1,economy:0,mobility:1},
+        'Aayla Secura':{attack:0,defense:0,economy:2,mobility:2},
+        'Saesee Tiin':{attack:1,defense:1,economy:1,mobility:1}
+      };
+      if(profiles[name])return profiles[name];
+      return [{attack:2,defense:1,economy:0,mobility:0},{attack:0,defense:2,economy:0,mobility:1},{attack:0,defense:1,economy:2,mobility:0}][index%3];
+    }
+    function commanderDescription(name){
+      const descriptions={
+        'General Plo Koon':'Especialista em formações defensivas e suporte de tropas.',
+        'Capitã Rex':'Líder de elite da República. Aprimora tropas e táticas.',
+        'Capitão Rex':'Líder de elite da República. Aprimora tropas e táticas.',
+        'Aayla Secura':'Mestre Jedi com grande conexão com a Força. Foco em suporte.',
+        'Saesee Tiin':'Comandante tático. Melhora o desempenho das tropas.'
+      };
+      return descriptions[name]||'Liderança e doutrina militar.';
+    }
+    function miniCommanderStats(bonus){
+      const base={attack:2,defense:3,economy:2,mobility:2};
+      const vals={attack:Math.min(5,base.attack+bonus.attack),defense:Math.min(5,base.defense+bonus.defense),economy:Math.min(5,base.economy+bonus.economy),mobility:Math.min(5,base.mobility+bonus.mobility)};
+      return '<div class="commander-mini-stats">'+[['ATAQUE',vals.attack,'#36a9ff'],['DEFESA',vals.defense,'#3bc76a'],['ECONOMIA',vals.economy,'#e4b53c'],['MOBILIDADE',vals.mobility,'#ac65ed']].map(([label,val,color])=>'<div class="commander-mini-row"><span>'+label+'</span><i><b style="width:'+(val*20)+'%;background:'+color+'"></b></i><strong>'+val+'</strong></div>').join('')+'</div>';
+    }
     function hubPortrait(name){
       const portraits={
         'Anakin Skywalker':'https://getwallpapers.com/wallpaper/full/1/4/b/402126.jpg',
@@ -551,7 +593,7 @@
       const config=activeEraFaction();
       const saved=selectedByEra[selectedEra+'_'+selectedFaction]||{};
       const champions=config.champions.map(([id,name])=>({id,name,role:'Champion · '+config.label,desc:'Disponível nesta era e facção.'}));
-      const commanders=config.commanders.map(([id,name],i)=>({id,name,role:'Comandante · '+config.label,desc:'Liderança e doutrina militar.',icon:['⚔','🛡','✦'][i%3],stats:[{attack:2,defense:1,economy:0,mobility:0},{attack:0,defense:2,economy:0,mobility:1},{attack:0,defense:1,economy:2,mobility:0}][i%3]}));
+      const commanders=config.commanders.map(([id,name],i)=>({id,name,role:'COMANDANTE · '+config.label,desc:commanderDescription(name),icon:['⚔','🛡','✦','◈'][i%4],stats:commanderBonus(name,i)}));
       const key=selectedEra+'_'+selectedFaction;
       if(!saved.champion||!champions.some(x=>x.id===saved.champion))saved.champion=champions[0].id;
       if(!saved.commander||!commanders.some(x=>x.id===saved.commander))saved.commander=commanders[0].id;
@@ -559,7 +601,7 @@
       selectedChampions[selectedFaction]=saved.champion;
       selectedCommanders[selectedFaction]=saved.commander;
       $('championChoices').innerHTML=champions.map(x=>'<button type="button" class="hub-person '+(saved.champion===x.id?'active':'')+'" data-champion="'+x.id+'"><img class="person-art" src="'+hubPortrait(x.name)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="person-icon">✦</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
-      $('commanderChoices').innerHTML=commanders.map(x=>'<button type="button" class="hub-person '+(saved.commander===x.id?'active':'')+'" data-commander="'+x.id+'"><img class="person-art" src="'+hubPortrait(x.name)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="person-icon">'+x.icon+'</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
+      $('commanderChoices').innerHTML=commanders.map(x=>'<button type="button" class="hub-person '+(saved.commander===x.id?'active':'')+'" data-commander="'+x.id+'"><img class="person-art" src="'+hubPortrait(x.name)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="person-icon">'+x.icon+'</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div>'+miniCommanderStats(x.stats)+'</button>').join('');
       $('championChoices').querySelectorAll('[data-champion]').forEach(b=>b.addEventListener('click',()=>{saved.champion=b.dataset.champion;selectedByEra[key]=saved;renderRosterChoices();}));
       $('commanderChoices').querySelectorAll('[data-commander]').forEach(b=>b.addEventListener('click',()=>{saved.commander=b.dataset.commander;selectedByEra[key]=saved;renderRosterChoices();}));
       const base={attack:2,defense:3,economy:2,mobility:2};
@@ -606,7 +648,7 @@
       selectedHeroes[humanFaction]=chosenChampion[0];
       fleet={jedi:1,sith:1,bounty:1};
       const coIndex=cfg.commanders.findIndex(x=>x[0]===chosenCommander[0]);
-      const bonus=[{attack:2,defense:1,economy:0,mobility:0},{attack:0,defense:2,economy:0,mobility:1},{attack:0,defense:1,economy:2,mobility:0}][Math.max(0,coIndex)%3];
+      const bonus=commanderBonus(chosenCommander[1],Math.max(0,coIndex));
       credits[humanFaction]+=bonus.economy;
       const cap=planet(capitalId(humanFaction));
       if(cap)cap.troops+=Math.floor((bonus.attack+bonus.defense)/2);
