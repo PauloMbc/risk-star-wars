@@ -153,12 +153,12 @@
     .hub-factions .choice{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-height:105px;border:1px solid #485a6b;border-radius:2px;background:#0c1722;color:#eef6ff;padding:12px 11px;text-align:left;box-shadow:inset 0 -45px 50px #02070dbd;transition:border-color .16s,box-shadow .16s}
     .hub-factions .choice:before{content:"";position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;opacity:.88;transition:transform .2s}
     .hub-factions .choice:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#06101be8 0%,#08131c99 50%,#07111b22 100%),linear-gradient(0deg,#02060bd9 0%,transparent 100%);pointer-events:none}
-    #eraChoices [data-era="clonewars"]:before{background-image:url('https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg')}
-    #eraChoices [data-era="classic"]:before{background-image:url('https://www.lucasfilm.com/app/uploads/EP4_KEY_18_R_gallery.jpg')}
-    #eraChoices [data-era="postempire"]:before{background-image:url('https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg')}
-    #factionChoices [data-faction="jedi"]:before{background-image:url('https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg')}
-    #factionChoices [data-faction="sith"]:before{background-image:url('https://www.lucasfilm.com/app/uploads/EP4_KEY_18_R_gallery.jpg')}
-    #factionChoices [data-faction="bounty"]:before{background-image:url('https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg')}
+    #eraChoices [data-era="clonewars"]:before{background-image:url('https://img.netzwelt.de/dw1200_dh675_sw0_sh0_sx0_sy0_sr16x9_nu0/picture/original/2021/08/star-wars-the-clone-wars-314602.jpg')}
+    #eraChoices [data-era="classic"]:before{background-image:url('https://www.wallpaperbetter.com/wallpaper/260/1001/280/darth-vader-star-wars-2K-wallpaper.jpg')}
+    #eraChoices [data-era="postempire"]:before{background-image:url('https://images.thedirect.com/media/article_full/mandalorian-season-4-release.jpg')}
+    #factionChoices [data-faction="jedi"]:before{background-image:url('https://wall.alphacoders.com/big.php?i=796656')}
+    #factionChoices [data-faction="sith"]:before{background-image:url('https://www.wallpaperbetter.com/wallpaper/260/1001/280/darth-vader-star-wars-2K-wallpaper.jpg')}
+    #factionChoices [data-faction="bounty"]:before{background-image:url('https://lumiere-a.akamaihd.net/v1/images/the-mandalorian-character-posters-bo-koska-axe_497yth4t_1c413e95.jpeg')}
     .hub-factions .choice:hover:before{transform:scale(1.04)}
     .hub-factions .choice.active{border:2px solid var(--choice-color);box-shadow:0 0 13px color-mix(in srgb,var(--choice-color) 40%,transparent),inset 0 -45px 50px #02070dbd}
     .hub-factions .choice-mark{font-size:21px;color:var(--choice-color);text-shadow:0 0 12px var(--choice-color);margin-bottom:auto}
@@ -528,11 +528,11 @@
     }
     function hubPortrait(name){
       const portraits={
-        'Anakin Skywalker':'https://lumiere-a.akamaihd.net/v1/images/anakin-skywalker-main_7b3e4ad4.jpeg?region=0%2C0%2C1200%2C675',
-        'Ahsoka Tano':'https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg',
-        'Obi-Wan Kenobi':'https://lumiere-a.akamaihd.net/v1/images/obi-wan-kenobi-main_9c516f4c.jpeg?region=0%2C0%2C1200%2C675',
-        'Yoda':'https://lumiere-a.akamaihd.net/v1/images/5b605ed14d53200001463d64-image_4a342588.jpeg?region=0%2C125%2C1536%2C614',
-        'Mace Windu':'https://m.media-amazon.com/images/M/MV5BZTAzYTM4MWItYWI0ZS00YTAyLTgwYTctZDU1YWU2MjJjNDBhXkEyXkFqcGc%40._V1_.jpg',
+        'Anakin Skywalker':'https://getwallpapers.com/wallpaper/full/1/4/b/402126.jpg',
+        'Ahsoka Tano':'https://1.bp.blogspot.com/-iAKBAT8Rm3I/V55n9kujgII/AAAAAAAAIJA/pg2ckbIAVYkV-Xosqr3vAA8slv2eMoqKgCLcB/s1600/tumblr_static_nsu1nv6p234cwokswc4gckww.png',
+        'Obi-Wan Kenobi':'https://i.pinimg.com/originals/a5/1d/53/a51d53a2f4bad4096c521acfbe3552b2.jpg',
+        'Yoda':'https://images.squarespace-cdn.com/content/v1/574bec3527d4bdfe229ea099/d0ef2b2a-082e-4ac1-b08e-bb030984f53e/yoda.jpg',
+        'Mace Windu':'https://gizmodo.com/app/uploads/2020/04/nw6sx4xr3r77ssllmanl.jpg',
         'Qui-Gon Jinn':'https://lumiere-a.akamaihd.net/v1/images/5cbdbc164c2d560001f78cdc-image_afe95642.jpeg?region=336%2C0%2C864%2C864&width=480',
         'General Plo Koon':'https://res.cloudinary.com/jerrick/image/upload/v1654184119/6298d8b7e6e59c001e83f252.jpg',
         'Capitã Rex':'https://res.cloudinary.com/jerrick/image/upload/v1653207507/6289f1d3a7e582001e85f22c.jpg',
