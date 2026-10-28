@@ -477,7 +477,7 @@
         source.troops-=moved;
         const oldOwner=target.owner;
         target.owner=attackerFaction;target.troops=moved;
-        if(attackerFaction==='bounty')credits.bounty+=2;
+        if(attackerFaction==='bounty')credits.bounty+=4;
         if(record)addLog('⚔','Planeta conquistado',factions[attackerFaction].name+' tomou '+target.name+(oldOwner?' de '+factions[oldOwner].name:'')+'.');
       }else if(record){
         addLog('⚔','Combate em '+target.name,'Ataque '+attackDice.join(',')+' · Defesa '+defendDice.join(',')+'. Perdas: '+attackerLoss+' sua(s), '+defenderLoss+' inimiga(s).');
@@ -565,7 +565,7 @@
     }
 
     function showHelp(){
-      alert('COMO JOGAR\n\n1. Escolha uma facção no início.\n2. Clique em um planeta seu para defini-lo como origem.\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\n6. Encerrar turno permite que as duas facções rivais atuem.\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\n\nControle 10 planetas para vencer. Esta é a primeira versão jogável; diplomacia, heróis, naves e campanhas avançadas ainda serão adicionados.');
+      alert('COMO JOGAR\n\n1. Escolha uma facção no início.\n2. Clique em um planeta seu para defini-lo como origem.\n3. Clique em um planeta ligado por uma rota para selecionar o alvo.\n4. Use Reforçar para colocar tropas ou Contratar para comprar duas tropas por créditos.\n5. Ataque o alvo. Os dados são comparados em pares; em empate, a defesa vence.\n6. Encerrar turno permite que as duas facções rivais atuem.\n7. A Ordem Jedi recebe +1 na defesa; os Sith recebem +1 no ataque; caçadores pagam menos por mercenários.\n8. Na Fase 2, transporte o campeão a planetas aliados com lançadeiras ou cruzadores, compre naves e use bombardeio orbital em alvos conectados.\n\nControle 10 planetas para vencer.');
     }
     function showToast(message){
       const el=$('toast');el.textContent=message;el.classList.add('show');
