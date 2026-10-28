@@ -214,6 +214,24 @@
     @media(max-width:999px){.setup-card.setup-hub{width:98vw;max-height:96vh;padding:10px}.hub-board{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-era-panel,.hub-faction-panel{min-height:100%}.hub-bottom{grid-template-columns:1fr 1fr}.hub-roster{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-commanders{grid-template-columns:1fr}.hub-person{min-height:120px}}
     @media(max-width:640px){.overlay#setupOverlay{padding:5px}.setup-card.setup-hub{width:100%;max-height:98vh;padding:7px}.hub-heading{display:block;padding:5px}.hub-title{font-size:21px}.hub-step{display:inline-block;margin-top:7px}.hub-board{grid-template-columns:1fr;gap:7px}.hub-factions .choice{min-height:100px}.hub-champions{grid-template-columns:repeat(3,minmax(0,1fr))}.hub-person{min-height:125px}.hub-commanders .hub-person{min-height:66px}.hub-bottom{grid-template-columns:1fr}.hub-loadout{grid-template-columns:1fr 1fr}.hub-galaxy-scene{min-height:240px}.hub-map-title{font-size:10px}}
 
+ 
+    .hub-summary-grid{display:grid;grid-template-columns:.9fr 1fr 1fr;gap:7px;padding:8px;align-items:stretch}
+    .hub-selected-list{display:grid;gap:6px;align-content:start}
+    .hub-selected-row{display:flex;align-items:center;gap:7px;min-height:45px;padding:5px;border:1px solid #263b4e;background:#08131e}
+    .hub-selected-icon{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border:1px solid #8f713b;color:#eac56b;background:radial-gradient(circle,#1d3041,#07101a);font-size:17px}
+    .hub-selected-row small{display:block;font-size:7px;letter-spacing:.8px;color:#9aacc0;margin-bottom:3px}
+    .hub-selected-row b{display:block;color:#7bd0f3;font-size:9px;line-height:1.25;overflow-wrap:anywhere}
+    .hub-special-effects{display:grid;gap:9px}
+    .hub-effect{display:grid;grid-template-columns:28px 1fr;gap:7px;align-items:start;padding-bottom:8px;border-bottom:1px solid #243548}
+    .hub-effect:last-child{border-bottom:0;padding-bottom:0}
+    .hub-effect-icon{width:26px;height:26px;display:grid;place-items:center;border:1px solid #3985a1;border-radius:50%;color:#6edafa;font-size:15px}
+    .hub-effect b{font-size:8px;color:#dce7f4;letter-spacing:.4px}
+    .hub-effect p{font-size:8px;color:#a6b7c8;line-height:1.4;margin:4px 0 0}
+    .hub-galaxy-scene{background:radial-gradient(ellipse at 50% 54%,#183a51 0%,#0b1d2b 55%,#030a11 100%)}
+    .hub-galaxy-scene:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 12% 21%,#d9f1ff 1px,transparent 2px),radial-gradient(1px 1px at 83% 11%,#d9f1ff 1px,transparent 2px),radial-gradient(1px 1px at 92% 65%,#d9f1ff 1px,transparent 2px),radial-gradient(1px 1px at 7% 82%,#d9f1ff 1px,transparent 2px);opacity:.65}
+    @media(max-width:999px){.hub-summary-grid{grid-template-columns:1fr}.hub-selected-list{grid-template-columns:1fr 1fr}.hub-loadout-card{min-width:0}}
+    @media(max-width:640px){.hub-summary-grid{grid-template-columns:1fr}.hub-selected-list{grid-template-columns:1fr 1fr}.hub-loadout{grid-template-columns:1fr 1fr}.hub-selected-row{min-height:40px}.hub-selected-icon{width:26px;height:26px;flex-basis:26px}}
+
   </style>
 </head>
 <body>
@@ -345,8 +363,11 @@
       <div class="hub-bottom">
         <section class="hub-panel hub-summary-panel">
           <div class="hub-panel-title">5. RESUMO DA ESCOLHA</div><h2 class="hub-summary-heading">CONFIRME SUA ESCOLHA</h2><p class="hub-panel-copy">Revise suas escolhas antes de iniciar sua jornada pela galáxia.</p>
-          <div class="hub-loadout"><div class="hub-loadout-card"><div class="hub-loadout-title">BÔNUS FINAIS · CHAMPION</div><div id="championStats"></div></div><div class="hub-loadout-card"><div class="hub-loadout-title">ATRIBUTOS · COMANDANTE</div><div id="commanderStats"></div></div></div>
-          <div class="hub-summary" id="loadoutSummary"></div>
+          <div class="hub-summary-grid">
+            <div class="hub-selected-list" id="loadoutSummary"></div>
+            <div class="hub-loadout-card"><div class="hub-loadout-title">BÔNUS FINAIS</div><div id="championStats"></div></div>
+            <div class="hub-loadout-card"><div class="hub-loadout-title">EFEITOS ESPECIAIS</div><div id="commanderStats" class="hub-special-effects"></div></div>
+          </div>
           <button class="launch-btn hub-start" id="startBtn" type="button">✦ INICIAR PARTIDA · QUE A FORÇA ESTEJA COM VOCÊ!</button>
           <button class="hub-back hub-back-bottom" id="backToFactionBtn" type="button">← VOLTAR ÀS FACÇÕES</button>
         </section>
@@ -507,17 +528,18 @@
     }
     function hubPortrait(name){
       const portraits={
-        'Anakin Skywalker':'https://www.looper.com/img/gallery/the-untold-truth-of-ahsoka-tano/be-a-padawan-not-a-padawont-1584131265.jpg',
+        'Anakin Skywalker':'https://lumiere-a.akamaihd.net/v1/images/anakin-skywalker-main_7b3e4ad4.jpeg?region=0%2C0%2C1200%2C675',
         'Ahsoka Tano':'https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg',
-        'Obi-Wan Kenobi':'https://miro.medium.com/v2/1%2ACAC9sqCxEjsAoV-k6YRcYw.jpeg',
-        'Yoda':'https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg',
-        'Mace Windu':'https://gizmodo.com/app/uploads/2020/04/nw6sx4xr3r77ssllmanl.jpg',
-        'Qui-Gon Jinn':'https://miro.medium.com/v2/1%2ACAC9sqCxEjsAoV-k6YRcYw.jpeg',
+        'Obi-Wan Kenobi':'https://lumiere-a.akamaihd.net/v1/images/obi-wan-kenobi-main_9c516f4c.jpeg?region=0%2C0%2C1200%2C675',
+        'Yoda':'https://lumiere-a.akamaihd.net/v1/images/5b605ed14d53200001463d64-image_4a342588.jpeg?region=0%2C125%2C1536%2C614',
+        'Mace Windu':'https://m.media-amazon.com/images/M/MV5BZTAzYTM4MWItYWI0ZS00YTAyLTgwYTctZDU1YWU2MjJjNDBhXkEyXkFqcGc%40._V1_.jpg',
+        'Qui-Gon Jinn':'https://lumiere-a.akamaihd.net/v1/images/5cbdbc164c2d560001f78cdc-image_afe95642.jpeg?region=336%2C0%2C864%2C864&width=480',
         'General Plo Koon':'https://res.cloudinary.com/jerrick/image/upload/v1654184119/6298d8b7e6e59c001e83f252.jpg',
-        'Capitã Rex':'https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg',
-        'Rex':'https://starwarslatinamerica.com/wp-content/uploads/2022/04/star-wars-the-battle-of-felucia.jpg',
-        'Aayla Secura':'https://is1-ssl.mzstatic.com/image/thumb/lYs2AEmgVB9T1-2HBG9Xrg/1200x675.jpg',
-        'Saesee Tiin':'https://res.cloudinary.com/jerrick/image/upload/v1654184119/6298d8b7e6e59c001e83f252.jpg',
+        'Capitã Rex':'https://res.cloudinary.com/jerrick/image/upload/v1653207507/6289f1d3a7e582001e85f22c.jpg',
+        'Capitão Rex':'https://res.cloudinary.com/jerrick/image/upload/v1653207507/6289f1d3a7e582001e85f22c.jpg',
+        'Rex':'https://res.cloudinary.com/jerrick/image/upload/v1653207507/6289f1d3a7e582001e85f22c.jpg',
+        'Aayla Secura':'https://imgix.ranker.com/user_node_img/50081/1001610394/original/aayla-secura-photo-u2?auto=format&dpr=2&fit=crop&fm=pjpg&q=60&w=500',
+        'Saesee Tiin':'https://imgix.ranker.com/user_node_img/50081/1001610718/original/saesee-tiin-photo-u2?auto=format&dpr=2&fit=crop&fm=pjpg&q=60&w=500',
         'Darth Vader':'https://www.lucasfilm.com/app/uploads/EP4_KEY_18_R_gallery.jpg',
         'Moff Gideon':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg',
         'Bo-Katan Kryze':'https://m.media-amazon.com/images/M/MV5BM2U4NDEzMjctNWQyYy00YTA5LWE4MGUtMGY2NTIxYjdjMzRhXkEyXkFqcGc%40._V1_.jpg',
@@ -540,14 +562,23 @@
       $('commanderChoices').innerHTML=commanders.map(x=>'<button type="button" class="hub-person '+(saved.commander===x.id?'active':'')+'" data-commander="'+x.id+'"><img class="person-art" src="'+hubPortrait(x.name)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="person-icon">'+x.icon+'</div><div class="person-name">'+x.name+'</div><div class="person-role">'+x.role+'</div><div class="person-desc">'+x.desc+'</div></button>').join('');
       $('championChoices').querySelectorAll('[data-champion]').forEach(b=>b.addEventListener('click',()=>{saved.champion=b.dataset.champion;selectedByEra[key]=saved;renderRosterChoices();}));
       $('commanderChoices').querySelectorAll('[data-commander]').forEach(b=>b.addEventListener('click',()=>{saved.commander=b.dataset.commander;selectedByEra[key]=saved;renderRosterChoices();}));
-      const base={attack:3,defense:3,economy:2,mobility:2};
+      const base={attack:2,defense:3,economy:2,mobility:2};
       const champStats=champions.find(x=>x.id===saved.champion);
       const commander=commanders.find(x=>x.id===saved.commander);
-      const champBonus={attack:1,defense:1,economy:0,mobility:0};
-      const stats={attack:Math.min(5,base.attack+champBonus.attack),defense:Math.min(5,base.defense+champBonus.defense),economy:base.economy,mobility:base.mobility};
+      const champPower={
+        'Anakin Skywalker':{bonus:{attack:2,defense:0,economy:0,mobility:1},title:'FORMA DE ATAQUE',desc:'Aumenta a força ofensiva e acelera o avanço.'},
+        'Ahsoka Tano':{bonus:{attack:1,defense:1,economy:0,mobility:2},title:'AGILIDADE TOGRUTA',desc:'Mobilidade e versatilidade em missões especiais.'},
+        'Obi-Wan Kenobi':{bonus:{attack:0,defense:2,economy:0,mobility:0},title:'SORESU',desc:'Reduz 20% do dano recebido por 1 turno.'},
+        'Yoda':{bonus:{attack:0,defense:2,economy:0,mobility:0},title:'MESTRE DA FORÇA',desc:'Recupera tropas aliadas em território amigo.'},
+        'Mace Windu':{bonus:{attack:2,defense:1,economy:0,mobility:0},title:'VAAPAD',desc:'Potencializa o contra-ataque durante batalhas.'},
+        'Qui-Gon Jinn':{bonus:{attack:1,defense:1,economy:0,mobility:1},title:'VONTADE DA FORÇA',desc:'Maior flexibilidade em escolhas estratégicas.'}
+      };
+      const champAbility=champPower[champStats.name]||{bonus:{attack:1,defense:1,economy:0,mobility:0},title:'HABILIDADE ÚNICA',desc:champStats.desc};
+      const stats={attack:Math.min(5,base.attack+champAbility.bonus.attack+commander.stats.attack),defense:Math.min(5,base.defense+champAbility.bonus.defense+commander.stats.defense),economy:Math.min(5,base.economy+champAbility.bonus.economy+commander.stats.economy),mobility:Math.min(5,base.mobility+champAbility.bonus.mobility+commander.stats.mobility)};
       $('championStats').innerHTML=statMarkup(stats);
-      $('commanderStats').innerHTML=statMarkup({attack:Math.min(5,base.attack+commander.stats.attack),defense:Math.min(5,base.defense+commander.stats.defense),economy:Math.min(5,base.economy+commander.stats.economy),mobility:Math.min(5,base.mobility+commander.stats.mobility)});
-      $('loadoutSummary').innerHTML='<span>ERA <b>'+activeEra().name+'</b></span><span>FACÇÃO <b>'+config.label+'</b></span><span>CHAMPION <b>'+champStats.name+'</b></span><span>COMANDANTE <b>'+commander.name+'</b></span>';
+      const commandTitle=commander.name==='General Plo Koon'?'FORMAÇÕES DEFENSIVAS':commander.name==='Capitã Rex'?'TÁTICAS DE ELITE':commander.name==='Aayla Secura'?'CONEXÃO COM A FORÇA':commander.name==='Saesee Tiin'?'LIDERANÇA TÁTICA':(commander.power||'DOUTRINA MILITAR').toUpperCase();
+      $('commanderStats').innerHTML='<div class="hub-effect"><span class="hub-effect-icon">◈</span><div><b>'+champAbility.title+'</b><p>'+champAbility.desc+'</p></div></div><div class="hub-effect"><span class="hub-effect-icon">✧</span><div><b>'+commandTitle+'</b><p>'+commander.desc+'</p></div></div>';
+      $('loadoutSummary').innerHTML='<div class="hub-selected-row"><span class="hub-selected-icon">✦</span><div><small>ERA</small><b>'+activeEra().name+'</b></div></div><div class="hub-selected-row"><span class="hub-selected-icon">✧</span><div><small>FACÇÃO</small><b>'+config.label+'</b></div></div><div class="hub-selected-row"><span class="hub-selected-icon">♙</span><div><small>CHAMPION</small><b>'+champStats.name+'</b></div></div><div class="hub-selected-row"><span class="hub-selected-icon">◈</span><div><small>COMANDANTE</small><b>'+commander.name+'</b></div></div>';
     }
     function statMarkup(s){return [['Ataque',s.attack],['Defesa',s.defense],['Economia',s.economy],['Mobilidade',s.mobility]].map(([label,val])=>'<div class="hub-stat"><span>'+label+'</span><span class="hub-bar"><i style="width:'+(val*20)+'%"></i></span><strong>'+val+'</strong></div>').join('');}
     function applyLoadoutStats(){
